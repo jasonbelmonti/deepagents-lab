@@ -3,9 +3,9 @@ type: TaskDefinition
 title: Enable a Minimal Live DeepAgents Invocation
 task_id: enable-live-deepagents-invocation
 artifact_version: "3.0"
-revision: "3"
+revision: "5"
 created_at: "2026-08-23T09:10:39-05:00"
-updated_at: "2026-08-23T09:21:12-05:00"
+updated_at: "2026-08-23T09:27:10-05:00"
 validation_profile: skills/task-definition/profiles/task-definition.yaml
 ---
 
@@ -17,14 +17,15 @@ validation_profile: skills/task-definition/profiles/task-definition.yaml
 
 # Objective
 
-Provide the smallest repository-owned command that constructs DeepAgents with a real OpenAI model, submits one prompt, and prints the final response using an externally supplied `OPENAI_API_KEY`.
+Provide the smallest repository-owned command that constructs DeepAgents with a real OpenAI model, submits one prompt, and prints the final response using an externally supplied `OPENAI_API_KEY`. Prove the default path and record the result of the user's subsequent explicit `gpt-5.6-luna` override probe.
 
 # Context / Constraints
 
-- DeepAgents `0.7.8` is already locked and accepts an `openai:<model>` string; the OpenAI LangChain integration is not installed.
+- DeepAgents `0.7.8` and the OpenAI LangChain integration are locked; the committed command accepts an `openai:<model>` override.
 - The user has selected API-key authentication over the previously considered Codex CLI adapter.
 - Credentials must enter through the process environment and must never be committed or printed.
 - The default model is `openai:gpt-5.4`, matching current DeepAgents guidance, and must be overridable without code changes.
+- The user authorized one additional `openai:gpt-5.6-luna` sentinel call after the default-model smoke completed. The result is evidence about this credential and integration at this time, not a comparative model evaluation.
 - This slice proves direct model invocation only. It does not establish the evaluation baseline or exercise agent tools, middleware, subagents, tracing, or sandboxing.
 
 # Source Authority
@@ -32,9 +33,11 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 | Source | Authority | Status | Task implication |
 | --- | --- | --- | --- |
 | User instruction dated 2026-08-23 | Controlling request | Active | Use the OpenAI API key and make the minimum changes needed for a live DeepAgents invocation. |
+| User instruction dated 2026-08-23 requesting GPT-5.6 Luna | Controlling request | Active | Make one additional explicit model-override probe using `openai:gpt-5.6-luna`. |
 | `/Users/jasonbelmonti/Documents/Development/deepagents-lab/docs/design/deepagents-lab-design-process.md` | Repository design authority | Checksum verified | Preserve local source authority, explicit model configuration, secret hygiene, and the comparative R0 boundary. |
 | Installed `deepagents==0.7.8` API and current DeepAgents model documentation | Integration authority | Inspected | Pass a provider-qualified OpenAI model string to `create_deep_agent` and install the provider integration. |
-| Current repository state at commit `950a55b` | Implementation baseline | Inspected | Extend the bootstrap without introducing evaluator or experiment abstractions. |
+| OpenAI model documentation for `gpt-5.6-luna` | Provider model authority | Verified | Use exact API model ID `gpt-5.6-luna`; the Responses API and function calling are supported. |
+| Current repository state at commit `45844d7` | Implementation baseline | Inspected | Use the committed explicit model override; no code change is required for the probe. |
 
 # Task Scope
 
@@ -45,6 +48,7 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 | Add credential-safe configuration documentation | In scope | blocking | Provide `.env.example` values and shell-export instructions; do not auto-load or persist secrets. |
 | Add network-free tests for configuration, construction, invocation, and output behavior | In scope | blocking | Patch the DeepAgents construction boundary rather than calling the provider in the ordinary test suite. |
 | Record one opt-in real-model smoke result | In scope | blocking | Run only when `OPENAI_API_KEY` is available in the shell; use a minimal exact-response prompt. |
+| Record one user-requested GPT-5.6 Luna override result | In scope | blocking | Make one call with `--model openai:gpt-5.6-luna`; record either the sentinel response or the first provider/configuration error without retrying. |
 | Implement eval cases, Inspect or LangSmith adapters, tracing, tools, middleware, subagents, or sandbox behavior | Out of scope | non-blocking | These remain later comparative R0 work. |
 | Store credentials, request payloads, responses, or traces | Out of scope | blocking if introduced | The command is ephemeral and stdout-only. |
 
@@ -56,6 +60,7 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 | TD-SC-2 | The executable command accepts a prompt, defaults to `openai:gpt-5.4`, permits an explicit model override, constructs DeepAgents, and emits the final assistant text; a missing API key fails before agent construction with an actionable message. | Focused tests patch the construction boundary and assert arguments, output, and missing-key behavior. | Yes |
 | TD-SC-3 | With `OPENAI_API_KEY` supplied through the environment, the documented smoke command completes a real DeepAgents invocation and prints the requested sentinel response. | Captured exit code and redacted command output from the opt-in live smoke. | Yes |
 | TD-SC-4 | Repository documentation permits setup without copying a secret into a tracked file, and Git ignores local `.env` variants while retaining `.env.example`. | README and `.env.example` review plus `git check-ignore` and tracked-file inspection. | Yes |
+| TD-SC-5 | The command makes exactly one explicit `openai:gpt-5.6-luna` probe and records whether the configured API project accepts the model and returns the sentinel, or rejects the request with a provider/configuration error. | Captured model identifier, exit code, duration, and credential-redacted output or error from the single attempt. | Yes |
 
 # Incremental Value Delivery
 
@@ -63,6 +68,7 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 | --- | --- | --- | --- | --- |
 | 1. Offline executable seam | The repository can construct and drive the intended DeepAgents boundary without spending tokens. | Provider-package omission, ambiguous configuration, and accidental network calls in tests. | `TD-SC-1`, `TD-SC-2`, and `TD-SC-4` evidence. | Stop if integration requires evaluator scaffolding or secret persistence; otherwise continue to the opt-in smoke. |
 | 2. Live model proof | The same command reaches a real OpenAI model through DeepAgents. | A locally plausible but operationally invalid invocation path. | `TD-SC-3` evidence. | Stop after one successful sentinel response; evaluation coverage belongs to a later task. |
+| 3. GPT-5.6 Luna override probe | The committed runtime model override is exercised against the user-requested API model. | Uncertainty about this credential's current access and the integration's compatibility with the exact model ID. | `TD-SC-5` evidence. | Stop after the first response or provider/configuration error; do not retry or compare quality under this task. |
 
 # Review Boundary
 
@@ -81,6 +87,7 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 | TD-SC-2 | Exercise default/override construction, invocation/output, and missing-key paths without a provider call. | Focused pytest assertions and successful command help output. | Repository maintainer | Yes |
 | TD-SC-3 | Export the API key and run the documented exact-response smoke command once. | Successful process exit and sentinel output with credential and metadata redacted. | Credential holder | Yes |
 | TD-SC-4 | Inspect instructions and example configuration, then verify ignore/tracking behavior. | Documentation review, `git check-ignore -v .env`, and `git ls-files .env.example`. | Repository maintainer | Yes |
+| TD-SC-5 | Run one exact-response smoke with the explicit GPT-5.6 Luna model override. | Exit code, duration, and redacted sentinel output or first provider/configuration error. | Credential holder | Yes |
 
 # Execution Notes
 
@@ -94,7 +101,7 @@ Provide the smallest repository-owned command that constructs DeepAgents with a 
 
 | Execution status | Current proving slice | Evidence admitted | Next action | Blockers / stop condition |
 | --- | --- | --- | --- | --- |
-| review-ready | The live invocation slice is proven through TD-SC-3; all required criteria have evidence. | TD-SC-1: the frozen lock retains the three exact baseline versions, resolves `langchain-openai==1.6.0`, and seven offline tests pass. TD-SC-2: the default model constructs a `CompiledStateGraph`; focused tests prove default, environment, and explicit model selection, invocation input, final text, and pre-construction credential failure. TD-SC-3: one credentialed `openai:gpt-5.4` invocation exited 0 in 6.7 seconds and printed exactly `DEEPAGENTS_LIVE_OK`. TD-SC-4: documentation and `.env.example` contain no credential, `.env` is ignored, and tracked-file inspection includes only `.env.example`. | Present the committed bounded change and validation evidence for review. | Stop condition satisfied after one successful sentinel response; do not make another provider call under this task. |
+| review-ready | The default live invocation and user-requested GPT-5.6 Luna override are proven through TD-SC-5; all required criteria have evidence. | TD-SC-1: the frozen lock retains the three exact baseline versions, resolves `langchain-openai==1.6.0`, and seven offline tests pass. TD-SC-2: the default model constructs a `CompiledStateGraph`; focused tests prove default, environment, and explicit model selection, invocation input, final text, and pre-construction credential failure. TD-SC-3: one credentialed `openai:gpt-5.4` invocation exited 0 in 6.7 seconds and printed exactly `DEEPAGENTS_LIVE_OK`. TD-SC-4: documentation and `.env.example` contain no credential, `.env` is ignored, and tracked-file inspection includes only `.env.example`. TD-SC-5: one explicit `openai:gpt-5.6-luna` invocation exited 0 in 6.9 seconds and printed exactly `DEEPAGENTS_LUNA_OK`. | Present the committed task evidence for review. | Stop condition satisfied after the single GPT-5.6 Luna response; make no further provider call under this task. |
 
 # Follow-up / Non-blocking Work
 
