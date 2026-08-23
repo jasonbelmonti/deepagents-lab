@@ -11,7 +11,11 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "deepagents==0.7.8",
     "inspect-ai==0.3.260",
+    "langchain-openai>=1.1,<2",
 ]
+
+[project.scripts]
+deepagents-live = "deepagents_lab.live:main"
 
 [dependency-groups]
 dev = [
