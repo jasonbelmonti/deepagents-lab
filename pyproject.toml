@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "deepagents-lab"
+version = "0.1.0"
+description = "Local-first experiments and evaluations for the DeepAgents OSS library."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "deepagents==0.7.8",
+    "inspect-ai==0.3.260",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4,<10",
+]
+langsmith-control = [
+    "langsmith==0.11.1",
+]

@@ -1,0 +1,15 @@
+{
+  "validatedAt": "2026-08-22",
+  "packet": "deepagents-lab-design-process.md",
+  "valid": true,
+  "engineVersion": "3.5.0",
+  "runtimeVersion": "v22.20.0",
+  "syntaxVersion": "markdown-engine.validation@v1",
+  "documentVersion": "1.0.0",
+  "passedRules": 42,
+  "totalRules": 42,
+  "diagnosticCount": 0,
+  "engineInputHash": "fb8e99fadfe4e625f419c218fd833acd421eb70238e67134a73d42755197e959",
+  "profileHash": "9025f3e68c22e328cb22158b1a6c65c9ea06500ad11a6769ad16415929389bfe",
+  "packetSha256": "78df8a1aa03906874465d729b86bce7380be6263a23692babd37a2c254ea79d4"
+}

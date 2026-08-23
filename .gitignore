@@ -1,0 +1,50 @@
+# Repository-local worktrees
+.worktrees/
+
+# Python environments and package output
+.venv/
+venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Test and analysis caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials*.json
+secrets*.json
+
+# Evaluator logs, traces, results, and generated reports
+*.eval
+*.log
+.inspect_ai/
+.langsmith/
+eval-logs/
+inspect-logs/
+traces/
+results/
+artifacts/
+reports/generated/
+
+# Disposable sandbox state
+.sandboxes/
+sandboxes/
+
+# Local editor and operating-system state
+.DS_Store
+.idea/
+.vscode/
