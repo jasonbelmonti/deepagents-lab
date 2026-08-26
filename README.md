@@ -76,8 +76,8 @@ still verify the frozen install but reuse the local dependency store.
 ### 5. Try the agent
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000), submit a message, and then
-send a follow-up in the same thread. Use **New Thread** in the thread-history
-panel to start an isolated chat.
+send a follow-up in the same thread. Use the **New thread** button in the Agent
+Chat header to start an isolated chat.
 
 The local services are:
 
