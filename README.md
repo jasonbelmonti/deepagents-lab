@@ -2,26 +2,104 @@
 
 DeepAgents Lab is a local-first workbench for controlled experiments with the [DeepAgents OSS library](https://github.com/langchain-ai/deepagents). It includes a Python Agent Server and an exact-pinned, unmodified upstream Agent Chat UI submodule for browser-based experiments. The comparative evaluation baseline remains governed by the [design process packet](docs/design/deepagents-lab-design-process.md).
 
-The evaluation baseline has not been selected. Inspect AI is the provisional open-source target and LangSmith trace evaluation is the required same-case control. The R0 evidence, eight-point indifference band, and decision rule in the design packet govern the eventual choice.
+## Quick start
 
-## Environment
+### Prerequisites
 
-- Python 3.12, acquired and selected by `uv`
-- DeepAgents `0.7.8`
-- Inspect AI `0.3.260`
-- LangChain's OpenAI integration for live model calls
-- LangGraph CLI `0.4.31` with the in-memory Agent Server development runtime
-- LangSmith SDK `0.11.1` in the `langsmith-control` dependency group
-- Node.js `22.20.0` and Corepack; the upstream Agent Chat UI package pins pnpm
+- Git
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/)
+- Node.js `22.20.0` with Corepack available
+- An OpenAI API key
 
-Install the frozen environment, including the development and control groups:
+`uv` installs and selects the repository's required Python 3.12 runtime. The
+upstream Agent Chat UI pins its own pnpm version, which Corepack supplies.
+
+### 1. Install the project
+
+Clone the private repository if needed, then enter it:
+
+```bash
+git clone git@github.com:jasonbelmonti/deepagents-lab.git
+cd deepagents-lab
+```
+
+Install the complete frozen Python environment:
 
 ```bash
 uv sync --frozen --all-groups
 ```
 
-No model-provider or LangSmith credentials are required for repository setup or the
-offline test suite.
+### 2. Configure local credentials
+
+Create the ignored local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and add your OpenAI API key:
+
+```dotenv
+OPENAI_API_KEY=your-key-here
+DEEPAGENTS_LAB_MODEL=openai:gpt-5.4
+
+LANGSMITH_TRACING=false
+LANGSMITH_API_KEY=
+LANGSMITH_PROJECT=deepagents-lab
+```
+
+Only `OPENAI_API_KEY` is required for an agent run. Leave LangSmith tracing
+disabled unless you want to upload traces.
+
+### 3. Start the Agent Server
+
+In terminal 1, from the repository root:
+
+```bash
+uv run --frozen deepagents-server
+```
+
+Wait for the server to report that it is listening on `127.0.0.1:2024`.
+
+### 4. Start Agent Chat UI
+
+In terminal 2, from the same repository root:
+
+```bash
+uv run --frozen deepagents-ui
+```
+
+The first launch takes longer because this command initializes the exact-pinned
+UI submodule and installs its frozen JavaScript dependencies. Later launches
+still verify the frozen install but reuse the local dependency store.
+
+### 5. Try the agent
+
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000), submit a message, and then
+send a follow-up in the same thread. Use the **New thread** button in the Agent
+Chat header to start an isolated chat.
+
+The local services are:
+
+- Agent Chat UI: `http://127.0.0.1:3000`
+- Agent Server: `http://127.0.0.1:2024`
+- Agent Server API documentation: `http://127.0.0.1:2024/docs`
+- Graph ID: `deepagents_lab`
+
+Stop each process with `Ctrl-C` in its terminal.
+
+## Optional LangSmith tracing
+
+To send server-side traces to LangSmith, update `.env`:
+
+```dotenv
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=your-key-here
+LANGSMITH_PROJECT=deepagents-lab
+```
+
+Restart the Agent Server after changing `.env`. Model and tracing credentials
+remain in the Python server process and are not passed to the browser UI.
 
 ## Test
 
@@ -34,6 +112,9 @@ uv run --frozen --all-groups pytest -q
 The tests verify the package scaffold and live-invocation boundary without making
 network calls. Evaluator adapters, tracing, and sandbox behavior belong to the
 comparative R0.
+
+No OpenAI or LangSmith credentials are required for installation or the offline
+test suite.
 
 ## Live model smoke
 
@@ -67,15 +148,8 @@ coordinates are:
 - Graph ID: `deepagents_lab`
 - API documentation: `http://127.0.0.1:2024/docs`
 
-Create the ignored local environment file once:
-
-```bash
-cp .env.example .env
-```
-
-Add `OPENAI_API_KEY` to `.env`. Retain `LANGSMITH_TRACING=false`, or set it to
-`true` and add the optional LangSmith key and project values from the template.
-Then start the fixed loopback server with one command:
+After completing the quick-start configuration, start the fixed loopback server
+with one command:
 
 ```bash
 uv run --frozen deepagents-server
@@ -115,20 +189,6 @@ open-source or production deployment component.
 [Agent Chat UI repository](https://github.com/langchain-ai/agent-chat-ui) at an
 exact commit. The lab does not copy, patch, or maintain upstream UI source.
 
-From a clean checkout, create `.env` as described above, then start the accepted
-server in terminal 1:
-
-```bash
-uv sync --frozen --all-groups
-uv run --frozen deepagents-server
-```
-
-Start the UI in terminal 2:
-
-```bash
-uv run --frozen deepagents-ui
-```
-
 `deepagents-ui` initializes the exact-pinned submodule, installs from its frozen
 pnpm lock, and runs the unchanged upstream application on
 `http://127.0.0.1:3000`. It supplies the upstream-supported deployment URL
@@ -142,13 +202,16 @@ detection cleanup prevents Next.js from generating untracked agent-instruction
 files inside the submodule. Agent Chat UI itself remains unmodified and retains
 all capabilities provided by upstream.
 
-Submit a message, continue the same thread with a second message, and use
-**New Thread** in the thread-history panel to start an isolated chat. Stop both
-processes with `Ctrl-C`.
-
 Submodule dependencies, Next.js build output, local environment files, browser
 evidence, and Agent Server runtime state are ignored. This application is a
 local development surface, not evaluation evidence or a production deployment.
+
+## Evaluation status
+
+The evaluation baseline has not been selected. Inspect AI is the provisional
+open-source target and LangSmith trace evaluation is the required same-case
+control. The R0 evidence, eight-point indifference band, and decision rule in
+the design packet govern the eventual choice.
 
 ## Repository workflow
 
