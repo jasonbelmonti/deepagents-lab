@@ -3,9 +3,9 @@ type: TaskDefinition
 title: Connect Unmodified Agent Chat UI to the Local Agent Server
 task_id: add-local-agent-chat-ui
 artifact_version: "3.0"
-revision: "10"
+revision: "11"
 created_at: "2026-08-26T07:24:16-05:00"
-updated_at: "2026-08-26T10:20:05-05:00"
+updated_at: "2026-08-26T11:04:56-05:00"
 validation_profile: skills/task-definition/profiles/task-definition.yaml
 ---
 
@@ -110,7 +110,7 @@ This task delivers the browser half of the local development workbench without c
 
 | Execution status | Current proving slice | Evidence admitted | Next action | Blockers / stop condition |
 | --- | --- | --- | --- | --- |
-| review-ready | TD-SC-1 through TD-SC-4 are proven on the no-fork implementation; all three incremental slices are complete. | TD-SC-1: parent mode 160000 and submodule HEAD both equal exact upstream commit 2a76b8e0da2be9115348eaba0a08dd2020967fe8, the submodule stayed clean, frozen pnpm install and format passed, lint exited 0 with 18 upstream warnings, and production build/type validation passed with upstream notices. TD-SC-2: three focused launcher tests prove supported public defaults plus credential and agent-detection removal; live deepagents-ui bound only to 127.0.0.1:3000, connected to the accepted graph, and produced no generated submodule files. TD-SC-3: browser runs 01a03ea6-e247-7af1-9086-e131983c3c7d and 01a03ea7-2153-7c32-8c82-318700d0bf14 retained four messages on thread 01a03ea6-e231-7590-9737-f0a23c242040; isolated run 01a03ea7-66e7-77a3-8040-0a1967cf572f produced two messages on distinct thread 01a03ea7-66d4-7b72-a45f-bffdd772d7f8. TD-SC-4: documented deepagents-server and deepagents-ui commands passed, 18 Python tests passed, the submodule remained clean, temporary credentials were removed, and ports 2024/3000 are clear. | Perform independent review of the no-fork diff and current evidence. | None. |
+| review-ready | TD-SC-2 Round 1 remediation is proven while TD-SC-1, TD-SC-3, and TD-SC-4 remain intact. | TD-SC-1: the direct-upstream gitlink remains exact and the submodule is clean; upstream frozen install, format, lint with 18 accepted warnings, and build passed. TD-SC-2: the reproduced Round 1 environment now removes complete OPENAI_, LANGSMITH_, and legacy LANGCHAIN_ families plus deployment-proxy, UI-auth, and agent-detection variables; 3 focused tests and all 18 Python tests pass. TD-SC-3: accepted current-tree browser evidence retains same-thread runs 01a03ea6-e247-7af1-9086-e131983c3c7d and 01a03ea7-2153-7c32-8c82-318700d0bf14 plus isolated run 01a03ea7-66e7-77a3-8040-0a1967cf572f. TD-SC-4: the documented workflow remains unchanged, parent and submodule state are clean aside from the bounded remediation, and ports 2024/3000 are clear. | Run Round 2 convergent review against the immutable remediation head and the frozen contract. | Round 1 BLK-1 must close; stop if review requires upstream source modification, contract change, or architecture expansion. |
 
 # Follow-up / Non-blocking Work
 

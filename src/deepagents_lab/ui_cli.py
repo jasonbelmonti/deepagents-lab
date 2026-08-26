@@ -14,11 +14,14 @@ UI_ENVIRONMENT = {
     "NEXT_PUBLIC_API_URL": "http://127.0.0.1:2024",
     "NEXT_PUBLIC_ASSISTANT_ID": "deepagents_lab",
 }
-UI_CREDENTIAL_VARIABLES = (
-    "OPENAI_API_KEY",
-    "LANGSMITH_API_KEY",
+UI_SERVER_ONLY_VARIABLES = (
     "LANGGRAPH_API_URL",
     "NEXT_PUBLIC_AUTH_SCHEME",
+)
+UI_SERVER_ONLY_PREFIXES = (
+    "OPENAI_",
+    "LANGSMITH_",
+    "LANGCHAIN_",
 )
 UI_AGENT_DETECTION_VARIABLES = (
     "AI_AGENT",
@@ -40,7 +43,7 @@ UI_AGENT_DETECTION_VARIABLES = (
     "COPILOT_ALLOW_ALL",
     "COPILOT_GITHUB_TOKEN",
 )
-UI_REMOVED_VARIABLES = UI_CREDENTIAL_VARIABLES + UI_AGENT_DETECTION_VARIABLES
+UI_REMOVED_VARIABLES = UI_SERVER_ONLY_VARIABLES + UI_AGENT_DETECTION_VARIABLES
 
 
 def repository_root() -> Path:
@@ -84,8 +87,11 @@ def development_arguments() -> list[str]:
 def ui_environment(source: Mapping[str, str] | None = None) -> dict[str, str]:
     """Return public local UI configuration without inherited credentials."""
     environment = dict(os.environ if source is None else source)
-    for variable in UI_REMOVED_VARIABLES:
-        environment.pop(variable, None)
+    for variable in tuple(environment):
+        if variable in UI_REMOVED_VARIABLES or variable.startswith(
+            UI_SERVER_ONLY_PREFIXES
+        ):
+            environment.pop(variable)
     environment.update(UI_ENVIRONMENT)
     return environment
 
