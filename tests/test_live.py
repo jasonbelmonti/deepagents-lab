@@ -28,7 +28,7 @@ def test_invoke_live_constructs_agent_and_returns_final_text(
         return fake_agent
 
     monkeypatch.setenv("OPENAI_API_KEY", "test-only")
-    monkeypatch.setattr(live, "create_deep_agent", create_agent)
+    monkeypatch.setattr(live, "create_agent", create_agent)
 
     response = live.invoke_live("Return the sentinel.", model="openai:test-model")
 
@@ -45,7 +45,7 @@ def test_invoke_live_rejects_missing_key_before_construction(
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr(
         live,
-        "create_deep_agent",
+        "create_agent",
         lambda **_: pytest.fail("agent must not be constructed without a key"),
     )
 

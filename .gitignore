@@ -33,6 +33,7 @@ secrets*.json
 *.log
 .inspect_ai/
 .langsmith/
+.langgraph_api/
 eval-logs/
 inspect-logs/
 traces/

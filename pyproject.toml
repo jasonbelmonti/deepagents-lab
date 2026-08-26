@@ -19,6 +19,7 @@ deepagents-live = "deepagents_lab.live:main"
 
 [dependency-groups]
 dev = [
+    "langgraph-cli[inmem]==0.4.31",
     "pytest>=8.4,<10",
 ]
 langsmith-control = [

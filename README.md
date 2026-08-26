@@ -10,6 +10,7 @@ The evaluation baseline has not been selected. Inspect AI is the provisional ope
 - DeepAgents `0.7.8`
 - Inspect AI `0.3.260`
 - LangChain's OpenAI integration for live model calls
+- LangGraph CLI `0.4.31` with the in-memory Agent Server development runtime
 - LangSmith SDK `0.11.1` in the `langsmith-control` dependency group
 
 Install the frozen environment, including the development and control groups:
@@ -54,6 +55,52 @@ uv run --frozen deepagents-live --model openai:gpt-5.4 \
 
 A successful run prints the model's final assistant response. This is an opt-in
 provider call that incurs normal API usage; it is not yet an evaluation case.
+
+## Local Agent Server
+
+The repository exposes the same DeepAgents construction used by
+`deepagents-live` through a loopback-only local Agent Server. Its stable client
+coordinates are:
+
+- Server URL: `http://127.0.0.1:2024`
+- Graph ID: `deepagents_lab`
+- API documentation: `http://127.0.0.1:2024/docs`
+
+Install all frozen dependency groups, supply the provider credential in the
+server process, explicitly disable tracing, and start the server:
+
+```bash
+uv sync --frozen --all-groups
+export OPENAI_API_KEY="..."
+export LANGSMITH_TRACING=false
+unset LANGSMITH_API_KEY
+uv run --frozen langgraph dev --config langgraph.json \
+  --host 127.0.0.1 --port 2024 --no-browser
+```
+
+The server starts and exposes basic discovery without either an OpenAI or
+LangSmith credential. `OPENAI_API_KEY` is required when the server materializes
+the configured `openai:gpt-5.4` graph for schema inspection or a run. The key
+stays in the server environment and is never sent to a local UI client. No
+LangSmith account, API key, Studio session, or trace upload is required for this
+workflow.
+
+While the server is running, verify the registered graph from another shell:
+
+```bash
+curl -fsS -X POST -H 'Content-Type: application/json' \
+  -d '{"limit":10,"offset":0}' \
+  http://127.0.0.1:2024/assistants/search
+```
+
+Stop the server with `Ctrl-C`. Development thread state is written beneath the
+ignored `.langgraph_api/` directory and is not evaluation evidence.
+
+The exact `langgraph-cli[inmem]==0.4.31` development dependency resolves
+`langgraph-api==0.13.0`. The CLI is MIT-licensed; the Agent Server runtime uses
+the [Elastic License 2.0](https://pypi.org/project/langgraph-api/) and is kept at
+this local development boundary. It is not represented here as an OSI
+open-source or production deployment component.
 
 ## Repository workflow
 

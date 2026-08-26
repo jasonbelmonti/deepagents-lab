@@ -5,7 +5,7 @@ task_id: add-local-agent-server
 artifact_version: "3.0"
 revision: "1"
 created_at: "2026-08-26T07:24:16-05:00"
-updated_at: "2026-08-26T07:24:16-05:00"
+updated_at: "2026-08-26T08:26:51-05:00"
 validation_profile: skills/task-definition/profiles/task-definition.yaml
 ---
 
@@ -115,7 +115,7 @@ This task delivers the server/API prerequisite for a later Agent Chat UI task. I
 
 | Execution status | Current proving slice | Evidence admitted | Next action | Blockers / stop condition |
 | --- | --- | --- | --- | --- |
-| not-started | Reconcile design authority and prove the shared graph loads in a keyless local Agent Server for TD-SC-1 through TD-SC-3. | None admitted. | Create the implementation worktree from current remote `main`, update and validate the design packet, then implement and test the shared graph/server seam. | Stop if the runtime requires a LangSmith account, forces a change to an exact R0 pin, or cannot load the graph without duplicating construction. |
+| review-ready | TD-SC-1 through TD-SC-5 are proven and ready for independent review. | TD-SC-1: after rebasing onto current `origin/main`, the reconciled design preserved the subagent R0 chain as `CON-12` and the workbench chain as `CON-13`; design profile `3.5.0` returned `valid: true`, zero diagnostics, input hash `3dae03017841f3f4ed4564b6e90245421ed193b1a810c023b4fd1b5c8ab18b96`, and checksum `0b3d2d5e83f0d43655fbba7dbc5d7cb3aebbfbcea081624ada738aaf527036f8` verified. TD-SC-2: CLI and server share `create_agent`; 13 offline tests pass, server factory returns `Pregel`, config validates, CLI help works, and missing-key exit remains `2`. TD-SC-3: keyless `langgraph dev` bound only `127.0.0.1:2024`; `/docs` and `/openapi.json` returned `200`, assistant discovery returned graph ID `deepagents_lab`, and logs reported no license/control-plane key and skipped the metadata loop. TD-SC-4: live SDK stream emitted `metadata,values,updates,updates,values` and terminal `STREAM_OK`; primary thread `01a03e34-5a99-7421-ae9b-b7c5e52331b4` retained `ORBIT-72631` over two runs while isolated thread `01a03e34-8024-7563-8628-e8503e5effe3` returned `NONE`. TD-SC-5: frozen sync/lock pass; controlled pins remain `0.7.8`, `0.3.260`, and `0.11.1`; dev runtime resolves CLI `0.4.31`, API `0.13.0`, in-memory runtime `0.33.0`, and SDK `0.4.3`; ELv2 provenance and commands are documented; `.langgraph_api/` is ignored/untracked; no listener remains on port `2024`. | Conduct independent review against this task boundary; commit or remediate only from review findings. | None observed; the implementation stop conditions did not trigger. |
 
 # Follow-up / Non-blocking Work
 

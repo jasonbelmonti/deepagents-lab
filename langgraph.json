@@ -1,0 +1,6 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "deepagents_lab": "./src/deepagents_lab/server.py:graph"
+  }
+}
