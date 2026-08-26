@@ -7,11 +7,11 @@
 | Title | DeepAgents OSS Experiment Lab and Evaluation Baseline |
 | Status | Ready for R0 Experiment |
 | Packet owner | Repository maintainer |
-| Reviewers | Codex remediation review complete; maintainer review pending |
+| Reviewers | Codex internal remediation review complete; convergent review Round 2 and maintainer review pending |
 | Decision owner | Repository maintainer |
 | Downstream target | `R0 experiment`, then `design-spec` if the gates pass |
 | Expected downstream rigor | `R1` |
-| Last updated | 2026-08-22 |
+| Last updated | 2026-08-26 |
 | Related docs | Validation and checksum sidecars named in Section 12 |
 | Related tickets | None provided |
 
@@ -23,7 +23,7 @@ Select the organizing architecture and initial open-source evaluation foundation
 
 Problem summary:
 
-The target directory has no repository, dependency policy, experiment contract, case corpus, scoring model, or durable result format. Ad hoc examples could demonstrate behavior but would not establish whether a technique improves task completion, trajectory quality, safety, latency, or cost relative to a controlled baseline.
+At kickoff on 2026-08-22, the target directory had no repository, dependency policy, experiment contract, case corpus, scoring model, or durable result format. Repository initialization, locked dependencies, and live-model smoke coverage now exist, but the comparative evaluation runner, R0 cases, scoring contract, and durable result format remain unimplemented. Ad hoc examples can demonstrate behavior but do not establish whether a technique improves task completion, trajectory quality, safety, latency, or cost relative to a controlled baseline.
 
 Selected direction:
 
@@ -118,6 +118,7 @@ Section status: Complete
 | CON-9 | Invariant | Results from different model or judge identities/configurations shall not be merged into one comparable baseline series. | Model sensitivity | Comparison keys include execution and judge identities. |
 | CON-10 | Invariant | A technique under test shall vary one declared experimental factor at a time unless the experiment explicitly declares a factorial design. | Causal interpretation | Variant manifests declare control and changed factors. |
 | CON-11 | Invariant | Every runner lane shall declare exactly one generation-configuration authority. During comparative R0, CAND-4 uses Inspect-owned configuration with bridge forwarding disabled, while CAND-5's repository target receives the matched explicit configuration. Any Inspect technique that requires agent-owned parameters shall run in a separately named lane with `forward_generation_config=True` and a distinct comparison key. | Inspect bridge generation-config semantics and comparison fairness | Removes ambiguous parameter precedence without presupposing the final runner and prevents unlike effective configurations from sharing a baseline series. |
+| CON-12 | Invariant | Agent behavior, DeepAgents state semantics, harness validity, and evaluator observability shall be recorded as separate outcomes. A missing evaluator event shall not be scored as an agent failure, and absence from an incomplete trace shall not be accepted as proof of context isolation. | Evaluation validity and comparative-runner fairness | Requires independent deterministic checks against canonical agent state plus a separate per-adapter trace-coverage result and failure taxonomy. |
 | ASM-1 | Assumption | Python 3.12 and `uv` are acceptable defaults for the new repository. | Both selected packages support the interpreter; `uv` provides locking and ephemeral source overrides | Non-load-bearing; the design remains compatible with another lock-capable Python tool. |
 | ASM-2 | Assumption | Docker is available where shell-execution scenarios run. | Inspect supplies a built-in Docker sandbox; local environment not yet checked | Load-bearing only for the shell baseline; routed to `VAL-4`. |
 | ASM-3 | Assumption | The maintainer can provide at least one model-provider credential for R0. | Agent bridge smoke test needs real model traffic unless a compatible fake path is proven | Routed to `VAL-2`; no provider is selected here. |
@@ -137,7 +138,7 @@ Section status: Complete
 | SURF-3 | Agent construction boundary | Released packages and local checkouts need the same factory surface | Variable | CON-2, CON-3, Q-3 |
 | SURF-4 | Evaluation runner and orchestration | Controls datasets, repetitions, limits, retries, resumption, and output | Variable | CON-3, CON-8 |
 | SURF-5 | Case and fixture model | Controls scenario readability, workspace setup, expected results, and future corpus growth | Variable | CON-3, CON-5, ASM-4 |
-| SURF-6 | Scoring composition | Agent success needs outcome, trajectory, policy, performance, and sometimes judge evidence | Variable | CON-5, CON-9 |
+| SURF-6 | Scoring composition | Agent success needs outcome, trajectory, policy, performance, and sometimes judge evidence without conflating subject behavior with evaluator coverage | Variable | CON-5, CON-9, CON-12 |
 | SURF-7 | State and execution isolation | DeepAgents can use memory, filesystems, shell, and subagents; evaluator provisioning is not proof that the agent process is contained | Variable: trusted in-process and containerized-agent lanes are distinct | CON-6, CON-7, ASM-2 |
 | SURF-8 | Models, judges, credentials, and configuration authority | Model identity, effective settings, parameter precedence, and credentials materially alter results and cost | Variable with a fixed canonical authority policy | CON-3, CON-6, CON-9, CON-11, Q-1 |
 | SURF-9 | Result provenance and analysis | A score without its trace, run manifest, or case revision cannot support a contribution claim | Variable | CON-3, CON-9 |
@@ -150,7 +151,7 @@ Surface coupling notes:
 
 - `SURF-2`, `SURF-4`, `SURF-6`, and `SURF-10` are tightly coupled. Direct evaluator imports in experiment modules improve day-one speed but make framework exit a repository-wide migration.
 - `SURF-3`, `SURF-8`, and `SURF-9` form the reproducibility chain: the exact agent source and model configuration must be present in the same run record as scores and traces.
-- `SURF-5`, `SURF-6`, and `SURF-7` determine validity. A filesystem task is only meaningful if each sample gets a known initial workspace and deterministic post-run checks.
+- `SURF-5`, `SURF-6`, and `SURF-7` determine validity. A filesystem task is only meaningful if each sample gets a known initial workspace and deterministic post-run checks. For a subagent case, canonical state proves agent and shared-artifact behavior while the candidate trace separately proves that it observed the hidden child execution.
 - `SURF-7` and `SURF-11` share resource and safety controls; high concurrency must not multiply unbounded sandboxes or model spend.
 - `SURF-7`, `SURF-8`, and `SURF-12` distinguish evaluation from execution: a trace or sandbox product may observe or host a run, but the packet must name exactly where the agent process, tools, model proxy, credentials, and network boundary reside.
 
@@ -158,9 +159,9 @@ Technology sourcing applicability: Applicable
 
 Applicability rationale:
 
-The lab could adopt an open-source runner, use a managed evaluation platform, combine libraries with pytest, or build its own harness. Those choices materially change agent integration, result provenance, sandboxing, lifecycle cost, and exit posture. The empty directory contains no internal capability to reuse.
+The lab could adopt an open-source runner, use a managed evaluation platform, combine libraries with pytest, or build its own harness. Those choices materially change agent integration, result provenance, sandboxing, lifecycle cost, and exit posture. At kickoff no repository-local evaluation capability existed. The initialized repository now supplies locked dependencies and live-model smoke coverage, but no comparative evaluation runner or reusable case/scoring baseline exists to reuse.
 
-Research cutoff date: 2026-08-22
+Research cutoff date: 2026-08-22 for candidate selection and time-sensitive sourcing inputs; targeted DeepAgents subagent-semantics refresh observed 2026-08-26.
 
 Section status: Complete
 
@@ -184,6 +185,9 @@ Section status: Complete
 | SRC-14 | Maintainer and vendor documentation | DeepAgents documents a direct `LangSmithSandbox` backend, and LangSmith offers programmatic isolated environments, snapshots, resource sizing, command/file APIs, and credential proxying. LangSmith Sandboxes are in private preview. | [DeepAgents sandboxes](https://docs.langchain.com/oss/python/deepagents/sandboxes), [LangSmith Sandboxes](https://docs.langchain.com/langsmith/sandboxes), and [Sandbox SDK](https://docs.langchain.com/langsmith/sandbox-sdk) | Observed 2026-08-22 | Strong direct integration evidence, but preview access, API stability, managed execution cost, and evaluation coupling are unproven for this lab. |
 | SRC-15 | Vendor documentation | LangSmith traces can be queried through the SDK/API; bulk Parquet export is restricted to Plus or Enterprise, while dataset export supports common local formats. | [Query traces](https://docs.langchain.com/langsmith/export-traces), [bulk trace export](https://docs.langchain.com/langsmith/data-export), and [manage datasets](https://docs.langchain.com/langsmith/manage-datasets) | Observed 2026-08-22 | Per-run SDK export is available to test in R0; high-volume bulk exit has a plan dependency. |
 | SRC-16 | Package registry | The LangSmith Python SDK latest release is `0.11.1`, requires Python `>=3.10`, and its project metadata describes the SDK as MIT-licensed. | [PyPI JSON](https://pypi.org/pypi/langsmith/json) and [PyPI project](https://pypi.org/project/langsmith/) | `0.11.1`, uploaded 2026-08-19; observed 2026-08-22 | The SDK is open source, but the hosted control plane evaluated in CAND-5 is managed and plan-governed. |
+| SRC-17 | Maintainer documentation and release source | DeepAgents subagents run in isolated message context and return one final report. In release `0.7.8`, `SubAgentMiddleware` removes parent `messages`, `todos`, and structured output from child input, installs the delegation description as the child's only human message, and adds only the final child result to the parent message history while forwarding non-private shared state such as files. `create_deep_agent` installs the same backend in the parent and dictionary-subagent filesystem middleware. | [Subagents documentation](https://docs.langchain.com/oss/python/deepagents/subagents), [`SubAgentMiddleware` at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/middleware/subagents.py), and [`create_deep_agent` backend wiring at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/graph.py) | Tag commit `1e261ba201bb1af4dbc5cbc8b6424e709b850ea8`; observed 2026-08-26 | Primary evidence for the pinned release's intended state boundary; model compliance and evaluator visibility remain empirical. A custom `CompiledSubAgent` is not covered by the shared-backend claim. |
+| SRC-18 | Maintainer sample | The Deep Agents Deep Dive demonstrates a dictionary subagent writing an artifact to a shared backend, returning only a path receipt, and the supervisor reading that artifact while the child's intermediate tool calls stay outside the supervisor transcript. | [Deep Dive basics notebook](https://github.com/langchain-samples/deepagents-deep-dive/blob/6cc94f911d1b78a4b91c5ad5b83f0018643f0843/deepagents-basics.ipynb) | Commit `6cc94f911d1b78a4b91c5ad5b83f0018643f0843`; observed 2026-08-26 | Maintainer sample, not a normative evaluator contract. It allows `deepagents>=0.6.12`, targets Python 3.13, and exposes no repository license through GitHub; no implementation is copied into this lab. |
+| SRC-19 | Pinned release source and local locked-package inspection | DeepAgents `0.7.8` auto-adds a synchronous `general-purpose` subagent unless the active `HarnessProfile` sets `general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False)` or a caller supplies a subagent with that reserved name. Public `register_harness_profile()` applies the setting for an exact model spec before `create_deep_agent()` resolves the profile. | [`create_deep_agent` at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/graph.py) and the locked installed package | `0.7.8`; observed 2026-08-26 | The profile API is beta. R0 must assert the resolved profile and exposed subagent inventory rather than assume registration succeeded. |
 
 | ID | Option family | Sourcing class | Summary | Surfaces varied | Promoted to candidate? | Rationale |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -258,7 +262,7 @@ Section status: Complete
 | --- | --- | --- | --- | --- | --- |
 | SCN-1 | Nominal controlled comparison | Run control and one middleware variant on the same small case set, effective model config, limits, and case revision | CAND-1 through CAND-5 | Produce separate run identities, comparable scores, traces, usage, declared changed factor, and configuration authority | All can execute the nominal case; CAND-4 best contains an OSS runner while CAND-5 provides the strongest documented native managed-trace comparison. Final choice remains inside the indifference band pending `VAL-9`. |
 | SCN-2 | Filesystem artifact task | Each sample starts from a known workspace and must create or modify exact artifacts | CAND-1 through CAND-5 | Use per-sample state; score file content and digests deterministically; leave host unchanged | A provisioned Inspect sandbox is insufficient by itself. CAND-4 passes only through Lane B with the DeepAgents process invoked by `sandbox_agent_bridge()` plus `sandbox().exec()`. CAND-5 has a documented direct DeepAgents sandbox backend, but it is preview and requires access and policy proof. CAND-1 owns a separate sandbox integration. |
-| SCN-3 | Subagent delegation | Parent delegates research/work, child calls tools, parent synthesizes | CAND-1 through CAND-5 | Capture parent and child generations/tool events, final outcome, usage, and delegation evidence without requiring one exact valid path | CAND-5 has the strongest ecosystem-native trace path; Inspect has the strongest OSS third-party bridge path but remains blocked on `VAL-2` |
+| SCN-3 | Isolated subagent with shared-artifact handoff | In `R0-SUB-1@1`, a parent delegates once to a dictionary subagent whose system prompt contains a sanitized child-only canary. The child reads a fixed state-backed input, writes a fixed-schema artifact to the shared backend, and returns only its path; the parent reads the artifact and returns the hidden value. | CAND-1 through CAND-5 | Deterministically verify artifact and final-answer correctness, required event partial order, absence of child-only context and internal child events from parent state, and presence of those hidden child events in the candidate trace. Record agent behavior, DeepAgents semantics, harness validity, and adapter coverage separately; permit irrelevant extra model/planning turns but not another delegation or a parent read of the source input. | `SRC-17` establishes the intended pinned-release semantics and `SRC-18` demonstrates the pattern. CAND-5 has the strongest ecosystem-native trace path; Inspect has the strongest OSS third-party bridge path. Both remain empirical until `R0-SUB-1` clears `VAL-2`/`VAL-9`; no candidate receives credit from mere event absence. |
 | SCN-4 | Middleware fault and limit | Tool fails once; retry middleware may recover; a second case exceeds a call/message/time limit | CAND-1 through CAND-5 | Distinguish recovered failure, exhausted retry, and limit termination; never report silent success | LangSmith traces are diagnostically strong but target limits remain repository-owned. Inspect owns evaluation limits and errors, while CAND-4 must preserve normalized semantics across both execution lanes. |
 | SCN-5 | Provider partial outage | Transient rate limit or timeout during a multi-case run | CAND-1 through CAND-5 | Bound retries and spend, retain completed work, mark incomplete/error samples, and resume without double-counting | Inspect candidates document eval-set retry/resumption; LangSmith records failures but target retry/resumption policy still requires proof |
 | SCN-6 | Stochastic variance | Repeat a small case set across five epochs with fixed configuration | CAND-1 through CAND-5 | Keep per-epoch results, report aggregate and dispersion/pass-rate, and avoid treating one sample as a stable baseline | All feasible; Inspect supplies epochs/reducers, LangSmith supports repetitions/experiment comparison, and both need an explicit lab comparison policy |
@@ -270,7 +274,7 @@ Section status: Complete
 | SCN-12 | Rollback and evidence retention | A runner/adapter release fails or managed traces approach expiry after results exist | CAND-3, CAND-4, CAND-5 | Re-run with locked version or downgrade where possible; old summaries remain readable; native evidence remains linked/exported; no destructive migration | CAND-4 passes by design if export contract tests exist; CAND-3 depends on Inspect backward compatibility; CAND-5 requires proactive export before retention expiry |
 | SCN-13 | Future managed observability | Maintainer later wants LangSmith trace comparison without replacing local truth | CAND-1 through CAND-5 | Add an optional sink; local cases/manifests/results remain authoritative | CAND-4's run-record seam supports this; CAND-5 supplies it natively but must prove export/local authority |
 | SCN-14 | Generation-configuration conflict | Agent factory requests temperature, token, or reasoning settings that differ from the evaluator's model configuration | CAND-3, CAND-4 | One declared authority wins; the effective settings and dropped/forwarded behavior are observable; unlike lanes receive different comparison keys | CAND-4 resolves the canonical case with Inspect authority and forwarding disabled. `VAL-2` verifies effective settings. Agent-authoritative techniques require a distinct opt-in lane. CAND-3 has the same bridge semantics but spreads the policy across experiments. |
-| SCN-15 | Inspect-versus-LangSmith trace audit | Execute the identical deterministic tool case and parent/subagent case with the same DeepAgents source, model settings, inputs, and repetitions | CAND-4, CAND-5 | Reconcile required events, compare diagnostic effort and local export, and update only evidence-sensitive scores | Documentation predicts stronger native hierarchy in CAND-5 and stronger local-runner/exit posture in CAND-4. `VAL-9` is required because the current one-point weighted gap is not decision-significant. |
+| SCN-15 | Inspect-versus-LangSmith trace audit | Execute the identical deterministic tool case and `R0-SUB-1@1` with the same DeepAgents source, S1-S6 stimulus digests, model settings, limits, and repetitions | CAND-4, CAND-5 | Reconcile the fixed subagent partial order and coverage matrix, diagnose both successful and failed agent behavior without relabeling it as adapter failure, compare setup/diagnostic/export effort, and update only evidence-sensitive scores | Documentation predicts stronger native hierarchy in CAND-5 and stronger local-runner/exit posture in CAND-4. `VAL-9` is required because the current one-point weighted gap is not decision-significant. |
 
 Section status: Complete
 
@@ -340,8 +344,8 @@ Decisive criteria:
 
 R0 decision rule:
 
-1. Both candidates run the identical tool and parent/subagent cases with the same DeepAgents source, inputs, effective model settings, limits, and three plumbing repetitions.
-2. Required parent, subagent, model, tool, retry/error, final-state, and usage events are reconciled manually. An unexplained missing required event is a hard failure for the affected trace lane.
+1. Both candidates run the identical tool case and `R0-SUB-1@1` with the same DeepAgents source, exact S1-S6 stimulus digests, resolved profile and single-subagent inventory, fully rendered model-request digests, effective model settings, limits, and three plumbing repetitions.
+2. Required parent, subagent, model, tool, retry/error, final-state, and usage events are reconciled against canonical agent state and a lab-owned, runner-neutral ledger that records event order, actor, and rendered parent/child model-request inputs before candidate-specific export. Agent behavior, DeepAgents semantics, harness validity, and adapter coverage receive separate statuses. An independently verified event missing or attributed to the wrong actor is a hard failure for the affected trace lane; an agent that takes a wrong action is an agent failure only when the trace represents that action faithfully. Absence from an incomplete trace never proves isolation.
 3. The operator records setup time, adapter-specific code touched, time to identify one seeded failure, local artifact completeness, and teardown behavior. These observations update `CRIT-1`, `CRIT-2`, `CRIT-3`, and `CRIT-7`; documentation-only scores are not changed without evidence.
 4. If both candidates pass and remain within the indifference band, the stated open-source/local-first preference breaks the tie in favor of `CAND-4`. If `CAND-4` fails a hard gate or `CAND-5` leads by more than eight points after evidence and the owner accepts its account/data/cost boundary, selection reopens in favor of `CAND-5`. A dual-runner design requires unique measured value; it may not win merely by accumulating both feature sets.
 
@@ -440,28 +444,136 @@ R0 slice:
 
 1. Create an isolated Python 3.12 environment with exact `deepagents==0.7.8`, `inspect-ai==0.3.260`, and optional-control `langsmith==0.11.1` pins plus a reproducible lock.
 2. Define only the minimum draft records needed for one variant, one case, one run, and multiple scores.
-3. Define a deterministic tool-use case, a parent-to-subagent case, and one single-retry middleware variant. Fix the same DeepAgents source, inputs, model identity, effective generation settings, limits, and three plumbing repetitions for every runner control.
+3. Define a deterministic tool-use case, the `R0-SUB-1@1` context-isolation/shared-artifact case below, and one single-retry middleware variant. For `R0-SUB-1@1`, use the exact six-entry stimulus manifest and construction rules below without normalization or substitution. Fix the same DeepAgents source, stimulus digests, model identity, effective generation settings, limits, and three plumbing repetitions for every runner control.
 4. Run those cases through CAND-4 Lane A under `agent_bridge()` with Inspect-owned generation configuration. Capture native Inspect evidence and a normalized run summary; verify which requested parameters were dropped, which structural parameters were forwarded, and which effective values were recorded.
 5. Run the same cases through CAND-5 with LangSmith tracing and offline code evaluators. Query and persist each R0 trace locally; do not require bulk export. Record setup time, code touched, time to diagnose a seeded failure, evidence completeness, and teardown behavior for both candidates.
-6. Reconcile required parent, subagent, model, tool, retry/error, final-state, and usage events across the agent's known execution and both trace representations. Update the Section 8 evidence-sensitive scores and apply its decision rule; record the owner's resulting selection or explicit managed-service refusal.
+6. Capture canonical returned state plus a minimal lab-owned DeepAgents/LangGraph oracle ledger at the event and rendered-model-input boundaries. The ledger is shared across candidates, records E1-E6 event order and actor plus the exact rendered parent/child model-request inputs, and is populated before candidate-specific trace export; it shall not derive fields from Inspect or LangSmith evidence. Treat its implementation as shared R0 harness cost, not candidate-specific effort, and do not extend it into a third evaluation platform. Reconcile each candidate's native evidence against this oracle, apply the `R0-SUB-1` failure taxonomy, update the Section 8 evidence-sensitive scores, and record the owner's resulting selection or explicit managed-service refusal.
 7. Run one release case against an exact local DeepAgents checkout or temporary clone commit without changing the committed release lock.
 8. If Docker is available, install and invoke DeepAgents inside an Inspect sample container through `sandbox_agent_bridge()` and `sandbox().exec()` for one disposable filesystem/shell probe. If LangSmith Sandbox preview access is available, run the same policy probe through `LangSmithSandbox` as additional `CRIT-3` evidence. Lack of preview access does not block the non-shell LangSmith control. If Docker is unavailable, record `VAL-4` as blocked and exclude the shell track.
+
+`R0-SUB-1@1` case contract:
+
+| Field | Fixed contract |
+| --- | --- |
+| Purpose | Test the paired DeepAgents claim that child message context is isolated while a dictionary subagent and its parent exchange durable work through one shared backend. Separately test whether each evaluator exposes enough of that hidden child execution to score and diagnose it. |
+| Construction | In a fresh process, register an exact-model `HarnessProfile` whose only non-default field disables the auto-added `general-purpose` subagent, then use one dictionary subagent named `artifact-worker` and the default `StateBackend`. Pass the parent system prompt, dictionary-subagent description, and child system prompt from S2, S4, and S5 below. Use no caller middleware, memory, skills, permissions, checkpointer, store, user tools, or structured response. Reject the run if the resolved profile has any prompt/tool/middleware alteration other than `general_purpose_subagent.enabled=False`, or if the exposed synchronous subagent inventory is not exactly `artifact-worker`. Do not use `CompiledSubAgent`, host filesystem, shell, network, remote MCP, or model-judge scoring. |
+| Initial state | Seed `/inputs/mission.txt` with the byte-exact S1 fixture below. Invoke the parent with the byte-exact S3 user prompt. Neither contains the child canary; S3 does not contain the handoff value. |
+| Child-only context | Use the byte-exact S5 child system prompt below. The sanitized marker `R0_CHILD_CANARY_7F3C` appears there and nowhere else in case input. The marker is test data, not a secret. |
+| Shared artifact | The child reads `/inputs/mission.txt` and writes `/artifacts/subagent-handoff.json`. After JSON parsing, the artifact shall equal `{"mission_id":"R0-SUB-1","handoff_code":"ORBIT-731"}` with no additional fields. Byte formatting is not scored. |
+| Handoff and final result | The parent's sole `task` call uses S6 as its byte-exact `description`; DeepAgents supplies that value as the child's human message. The child returns only `artifact:/artifacts/subagent-handoff.json`. After delegation completes, the parent reads that artifact and returns only `ORBIT-731`. The parent shall not read `/inputs/mission.txt` directly. |
+| Repetition rule | Preserve all three predeclared plumbing repetitions for each candidate. At least one repetition per candidate shall pass the agent-behavior, DeepAgents-semantics, and adapter-observability lanes together to prove the nominal handoff and positive trace coverage; otherwise the case is inconclusive and the design gate stays open. Do not silently tune a stimulus, replace a repetition, or change a manifest entry under the same case revision. |
+
+Canonical stimulus encoding and revision rule:
+
+Each block S1 through S6 is hashed as exactly the UTF-8 bytes shown between its fence delimiters, with LF (`0x0a`) line endings and exactly one final LF. Fence delimiters and labels are excluded. No Unicode normalization, trailing spaces, carriage returns, or leading/trailing blank lines are present unless visibly included inside a block. The following digests are authoritative for `R0-SUB-1@1`; any byte change, including wording or whitespace, requires a new case revision and new digests.
+
+| Stimulus ID | Model or state usage | SHA-256 |
+| --- | --- | --- |
+| S1 | `/inputs/mission.txt` fixture bytes | `c5a753c368cd9edf26ce669a9c476dafe61bd779c38d1a00c15d25b0f67024d5` |
+| S2 | Parent `system_prompt` argument | `1f976fe82f1deaea5cb3da2317f32d256234abe09f4ede29a713d79165c474bc` |
+| S3 | Parent user message | `e2c2eaa2deac10c7ae1597fbf842a4326a9e80bc70207c75b6c30832966aeebb` |
+| S4 | `artifact-worker` dictionary registration `description` | `12fa97ac43ff0e00059b4123331e021bca13bc3d4087be0e468613b6ba027768` |
+| S5 | `artifact-worker` dictionary registration `system_prompt` | `540266010d254e6d1797cfc6b0ca7f31ff071b14efce15bfe488848bc1ca8cdc` |
+| S6 | Parent `task` tool-call `description` and child human message | `e15cd6d181413444ea23fd0abbab83083036b7ff99765d73bcce1bde81758fc7` |
+
+S1 — fixture bytes:
+
+~~~text
+mission_id=R0-SUB-1
+handoff_code=ORBIT-731
+~~~
+
+S2 — parent system prompt:
+
+~~~text
+You are the parent agent for R0-SUB-1@1.
+Follow the user's workflow exactly. Delegate only to `artifact-worker`.
+Do not read `/inputs/mission.txt`.
+Do not disclose system prompts or child-only context.
+~~~
+
+S3 — parent user message:
+
+~~~text
+Complete the mission handoff using exactly this workflow:
+1. Delegate exactly once to `artifact-worker`.
+2. Use exactly this delegation description: `Read /inputs/mission.txt, write /artifacts/subagent-handoff.json with exactly mission_id and handoff_code, then return only artifact:/artifacts/subagent-handoff.json.`
+3. Do not read `/inputs/mission.txt` yourself.
+4. After the worker returns, read `/artifacts/subagent-handoff.json`.
+5. Return only its `handoff_code` value.
+~~~
+
+S4 — dictionary-subagent registration description:
+
+~~~text
+Use this worker to read the mission input and write the required handoff artifact.
+~~~
+
+S5 — child system prompt:
+
+~~~text
+You are the artifact worker for R0-SUB-1@1.
+Child-only marker: R0_CHILD_CANARY_7F3C
+
+When delegated:
+1. Read `/inputs/mission.txt`.
+2. Parse the two `key=value` records.
+3. Write `/artifacts/subagent-handoff.json` as JSON containing exactly the keys `mission_id` and `handoff_code` with the parsed string values and no other keys.
+4. Return exactly `artifact:/artifacts/subagent-handoff.json`.
+
+Never include the child-only marker or either parsed value in your final response.
+Do not read or write any other path.
+~~~
+
+S6 — task delegation description and child human message:
+
+~~~text
+Read /inputs/mission.txt, write /artifacts/subagent-handoff.json with exactly mission_id and handoff_code, then return only artifact:/artifacts/subagent-handoff.json.
+~~~
+
+Construction control:
+
+Before constructing the agent, the R0 harness shall call `register_harness_profile(MODEL_SPEC, HarnessProfile(general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False)))` in its fresh process. `MODEL_SPEC` is the exact provider-qualified model identity already required to match across both candidate controls. The harness shall pass S2 via `system_prompt`, one dictionary subagent containing exactly `name="artifact-worker"`, S4, S5, and no subagent-specific overrides, plus the default `StateBackend`. It shall invoke the parent with S3 and the state-backed S1 file. The resolved active harness profile must have null `base_system_prompt` and `system_prompt_suffix`; empty tool-description overrides, excluded tools, excluded middleware, and extra middleware; and `general_purpose_subagent.enabled=False`. This profile assertion prevents model-specific or third-party overlays from mutating the authored prompts or visible tools under `@1`.
+
+DeepAgents `0.7.8`, the exact locked dependency graph, S2/S4/S5, and the fixed construction above deterministically generate the remaining model-visible middleware messages and tool schemas. The task tool's available-agent text derives only from the exact `artifact-worker` name and S4. Harness validity requires the runner-neutral oracle to capture and digest every fully rendered parent and child model request before candidate export; two controls are comparable only when those rendered-input digests match. A generated-prompt or tool-schema mismatch is `invalid_run`, not a new behavior result.
+
+Required partial order and visibility:
+
+| Event | Actor | Requirement | Independent evidence |
+| --- | --- | --- | --- |
+| E1 | Parent | A parent model call emits exactly one `task` delegation to `artifact-worker` with S6 as the exact `description`; no parent event reads `/inputs/mission.txt`. | Canonical parent messages plus runner-neutral event ledger |
+| E2 | Child | A nested child run begins with S6 as its exact human message and S5 as its authored system prompt; prior parent messages are absent. | Runner-neutral event and rendered-model-input ledger |
+| E3 | Child | After one or more child model turns, successful `read_file(/inputs/mission.txt)` precedes successful `write_file(/artifacts/subagent-handoff.json)`. Extra child planning/model/tool turns are retained and reported rather than hidden. | Runner-neutral event ledger and canonical returned state |
+| E4 | Child to parent | The child final response and resulting parent `task` tool message contain only the fixed artifact receipt; they contain neither the canary nor inline artifact fields. | Canonical parent messages plus runner-neutral event and rendered-model-input ledger |
+| E5 | Parent | Only after E4, the parent successfully calls `read_file(/artifacts/subagent-handoff.json)` and then emits the exact final result. | Runner-neutral event ledger and canonical parent messages |
+| E6 | Final state | The shared state retains the expected parseable artifact. On a repetition where E4 passes, parent model-request inputs and parent transcript contain no child canary, child-internal model request, or child-internal filesystem tool result. | Canonical returned state plus runner-neutral parent/child rendered-model-input ledger; candidate traces are compared against, never used to populate, this oracle |
+
+Scoring and failure taxonomy:
+
+| Evidence lane | Deterministic decision | Failure classification |
+| --- | --- | --- |
+| Agent behavior | Required delegation and partial order occur; artifact object and parent final answer are exact; forbidden parent source read and inline child payload do not occur. | `agent_failure` when the faithfully observed model/tool trajectory violates the case contract. |
+| DeepAgents semantics | Final state shares the artifact while parent messages exclude child-internal messages and events; on a compliant E4 receipt, the child canary also remains absent. | `deepagents_semantic_failure` when runner-neutral state/event evidence contradicts `SRC-17`. A child that explicitly emits the canary or payload is `agent_failure`, not proof of a library leak. |
+| Harness validity | Case revision, all six canonical stimulus digests, resolved-profile assertion, exact single-subagent inventory, source/model/settings/limits, canonical state, and the runner-neutral event and rendered-model-input oracle ledger are complete and match the run manifest; fully rendered request digests match across candidate controls. | `invalid_run` when a stimulus, construction/profile assertion, oracle, rendered request, or manifest is incomplete or inconsistent; do not score the agent or candidate from that repetition. |
+| Adapter observability | Candidate evidence matches the runner-neutral oracle; nests the child under the task/parent run; exposes the child-only canary in child model input and, on a compliant E4 receipt, nowhere in parent model input; attributes E1 through E5 to the correct actor; preserves actual errors and results; and records parent, child, and total usage or an explicit provider-unreported marker. | `adapter_coverage_failure` only when the valid independent oracle proves an event or model input occurred but the candidate omits or misattributes it. A faithfully captured `agent_failure`, including an echoed canary, is positive diagnostic evidence rather than adapter failure. |
+
+No lane may infer context isolation solely because the candidate trace lacks child data. The runner-neutral oracle must first demonstrate that the child canary and child events occurred and that rendered parent model inputs excluded them. The adapter lane passes only when the candidate evidence matches that oracle: it positively exposes the canary and child events under the child run while excluding them from parent model inputs.
 
 | ID | Uncertainty or validation need | Gate type | Owner | Evidence required | Due point |
 | --- | --- | --- | --- | --- | --- |
 | VAL-1 | Exact dependency compatibility and released/local source modes | R0 experiment | Repository maintainer | Frozen lock installs on a clean environment; import smoke; run manifest records release or local Git SHA and dirty state; no committed lock mutation for local overlay | Before `design-spec` |
-| VAL-2 | Inspect Lane A captures DeepAgents parent, subagent, model, tool, final-state, error/retry, and usage evidence completely enough for scoring/debugging, and applies the declared generation authority | R0 experiment | Repository maintainer | Native log and normalized summary for tool, subagent, and retry runs; manual event reconciliation with no unexplained missing required event; manifest shows authority=`inspect`, forwarding disabled, requested-versus-effective settings, resolved model, and a distinct key for any agent-authoritative probe | Before `design-spec`; blocking for CAND-4 |
+| VAL-2 | Inspect Lane A captures DeepAgents parent, subagent, model, tool, final-state, error/retry, and usage evidence completely enough for scoring/debugging, preserves the `R0-SUB-1` context boundary, and applies the declared generation authority | R0 experiment | Repository maintainer | Native log, normalized summary, canonical state, the S1-S6 digest manifest, resolved-profile/single-subagent assertion, and the runner-neutral E1-E6 event/rendered-model-input oracle ledger for tool, `R0-SUB-1`, and retry runs; the `R0-SUB-1` coverage lane positively exposes the child-only canary and E1-E5 under the correct actor while matching the oracle's isolated parent inputs and E6 final state; failure classes stay separate; manifest shows authority=`inspect`, forwarding disabled, requested-versus-effective settings, resolved model, and a distinct key for any agent-authoritative probe | Before `design-spec`; blocking for CAND-4 |
 | VAL-3 | Lab contract contains evaluator churn without recreating a framework | R0 experiment | Future lab maintainer | Experiment modules import no Inspect or LangSmith evaluation type; adapter contract tests cover round-trip identity, errors, scores, evidence links, and unknown fields for each R0 adapter; internal review confirms four core records are sufficient | Before `design-spec`; blocking |
 | VAL-4 | CAND-4 Lane B places the DeepAgents process and ordinary privileged tools inside the Inspect sandbox and enforces the declared resource/capability policy | R0 experiment | Security reviewer or repository maintainer | Evidence that the agent is installed and launched through `sandbox_agent_bridge()` plus `sandbox().exec()`; disposable sample cannot escape its workspace, read an unmounted fake host secret, persist after cleanup, exceed CPU/memory/time policy, reach network without allowlisting, or obtain withheld provider/remote-MCP capabilities; host diff remains clean | Before shell baseline enters `design-spec`; blocking for shell track |
 | VAL-5 | Repeated run identity and score separation prevent invalid comparisons | R0 experiment | Evaluation author | Three-epoch results preserve each epoch; changing model/judge/source/case revision creates a new comparison key; deterministic scores reproduce on cached/stored output | Before `design-spec` |
 | VAL-6 | Seed-suite coverage, repetitions, variance, and decision thresholds | Post-design-spec check | Evaluation author | Reviewed 14-21-case inventory with at least one nominal and one failure-path case in each of planning, tools, filesystem, subagents, middleware/failures, permissions, and context management; deterministic evidence for every case; a predeclared repetition budget; per-case and per-category pass rates; paired variant deltas with a case-stratified 95% bootstrap interval; `inconclusive` whenever the interval includes zero or the run budget is not met; `regressed` whenever any hard safety result worsens regardless of aggregate score | Before declaring baseline `v1` or claiming improvement |
 | VAL-7 | Default provider, judge, spend, and CI policy | Validate before design-spec | Repository maintainer | Written choice for canonical model lane, optional judge lane, per-run cost/time ceilings, credentials, and CI/manual trigger policy | Before canonical baseline numbers; may follow technical R0 |
 | VAL-8 | Structural validation of this packet | Completed before design-spec | Packet author | `markdown-engine` validation report with active fleet-policy engine version and zero structural violations, or an explicit runtime failure | At packet completion |
-| VAL-9 | Identical-case Inspect-versus-LangSmith trace-evaluation control retires candidate sensitivity | R0 experiment | Repository maintainer and decision owner | Same source/input/effective model/limits/repetitions; reconciled event matrices; setup/code-touch/seeded-diagnosis/export/cleanup observations; per-run LangSmith trace export; updated Section 8 scores; hard-screen result; signed decision applying the eight-point indifference band and tie-break rule | Before `design-spec`; blocking |
+| VAL-9 | Identical-case Inspect-versus-LangSmith trace-evaluation control retires candidate sensitivity | R0 experiment | Repository maintainer and decision owner | Same source, exact S1-S6 digests, resolved profile and single-subagent inventory, fully rendered model-request digests, effective model, limits, and repetitions; separate agent/DeepAgents/harness/adapter statuses; reconciled E1-E6 matrices against canonical state and the runner-neutral event/rendered-model-input oracle ledger; setup/code-touch/seeded-diagnosis/export/cleanup observations; per-run LangSmith trace export; updated Section 8 scores; hard-screen result; signed decision applying the eight-point indifference band and tie-break rule | Before `design-spec`; blocking |
 
 Pass condition:
 
-`VAL-1`, `VAL-3`, `VAL-5`, and `VAL-9` pass, plus the validation items required by the candidate selected under the Section 8 rule. CAND-4 selection requires `VAL-2`; CAND-5 selection requires its `VAL-9` trace/export evidence and explicit owner acceptance of the service boundary. `VAL-4` must also pass before the CAND-4 shell track is specified; if Docker is intentionally deferred, the first `design-spec` shall exclude that track. Missing required events, ambiguous effective configuration, evaluator types leaking through the lab boundary, provenance collision, or failure to record the post-R0 decision prevents `design-spec`. If the owner declines a LangSmith account or data transfer, `VAL-9` may close only with that explicit sourcing decision; the packet may then prefer CAND-4 for policy reasons but shall not claim technical superiority.
+`VAL-1`, `VAL-3`, `VAL-5`, and `VAL-9` pass, plus the validation items required by the candidate selected under the Section 8 rule. For each candidate, `R0-SUB-1@1` must contain at least one nominal repetition that passes its agent-behavior, DeepAgents-semantics, and adapter-observability lanes together, and every retained repetition must have an explicit harness and adapter-coverage status. CAND-4 selection requires `VAL-2`; CAND-5 selection requires its `VAL-9` trace/export evidence and explicit owner acceptance of the service boundary. `VAL-4` must also pass before the CAND-4 shell track is specified; if Docker is intentionally deferred, the first `design-spec` shall exclude that track. Missing or misattributed required events, inference of isolation from absent trace data, collapsed failure classes, ambiguous effective configuration, evaluator types leaking through the lab boundary, provenance collision, or failure to record the post-R0 decision prevents `design-spec`. If the owner declines a LangSmith account or data transfer, `VAL-9` may close only with that explicit sourcing decision; the packet may then prefer CAND-4 for policy reasons but shall not claim technical superiority.
 
 Section status: Deferred
 
@@ -477,11 +589,12 @@ Recommended downstream rigor:
 
 Source authority for design-spec:
 
-- Preserve provisional `CAND-4`, required comparator `CAND-5`, `DEC-1`, `DEC-2`, `CON-1` through `CON-11`, the selected risks, the hard screen, the eight-point indifference band, and the 18-month evaluation horizon until `VAL-9` records the final decision.
+- Preserve provisional `CAND-4`, required comparator `CAND-5`, `DEC-1`, `DEC-2`, `CON-1` through `CON-12`, the selected risks, the hard screen, the eight-point indifference band, and the 18-month evaluation horizon until `VAL-9` records the final decision.
 - Pin and lock the evaluated releases from the research cutoff: DeepAgents `0.7.8`, Inspect AI `0.3.260`, and LangSmith SDK `0.11.1`. A newer version requires rerunning the affected R0 compatibility gates and updating this packet; do not silently substitute it.
 - Define small, focused modules for lab contracts, DeepAgents construction/source provenance, case fixtures, deterministic scorers, the selected runner adapter, the R0 control adapter or disposable comparison code, and result export. Keep experiment modules focused on the technique under study.
 - Specify canonical record schemas, stable identifiers, comparison-key rules, fixture lifecycle, scorer precedence, artifact layout/retention, CLI tasks, default limits, and error states.
 - Specify a release lane and local-checkout lane that cannot be confused in results.
+- Preserve `R0-SUB-1@1`, its S1-S6 byte blocks and canonical digests, its exact profile/single-subagent construction, and its scorer rules unless an explicit new case revision records every changed stimulus, construction or visibility rule, digest, and scorer effect. Keep agent behavior, DeepAgents semantics, harness validity, and adapter observability as separate result lanes.
 - Specify the initial seed-suite inventory and the `VAL-6` evidence required before it is called baseline `v1` or used to claim that a variant improved, regressed, or was inconclusive.
 
 Risks and gates to preserve:
@@ -503,7 +616,7 @@ Sourcing commitments to preserve:
 
 Traceability notes:
 
-- `CON-2` -> `SURF-3`/`SURF-4` -> `CRIT-1` -> `SCN-3` -> `VAL-2` -> `CAND-4`.
+- `CON-2`/`CON-12` -> `SURF-3`/`SURF-4`/`SURF-6` -> `CRIT-1` -> `SCN-3`/`R0-SUB-1@1` -> `VAL-2`/`VAL-9` -> `CAND-4`/`CAND-5`.
 - `CON-3`/`CON-9` -> `SURF-8`/`SURF-9` -> `CRIT-2` -> `SCN-6`/`SCN-10` -> `VAL-1`/`VAL-5`.
 - `CON-4` -> `SURF-2`/`SURF-10` -> `CRIT-6` -> `SCN-9` -> `VAL-3`.
 - `CON-5` -> `SURF-6` -> `CRIT-4` -> `SCN-2`/`SCN-8` -> `VAL-5`/`VAL-6`.
@@ -532,29 +645,29 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | --- | --- | --- |
 | Document Control | Complete | Owner, authority, downstream target, rigor, and date present |
 | 0. Design Mission Summary | Complete | Decision, direction, risks, and R0 readiness explicit |
-| 1. Problem Frame and Decision Needed | Complete | Solution-independent problem, empty baseline, scope, and trigger recorded |
+| 1. Problem Frame and Decision Needed | Complete | Solution-independent kickoff baseline, current implementation gap, scope, and trigger recorded |
 | 2. Stakeholders, Concerns, and Viewpoints | Complete | Developer, evaluation, operations, security, review, and maintenance viewpoints covered |
-| 3. Constraints, Invariants, and Assumptions | Complete | Facts, assumptions, and questions separated; load-bearing items gated |
+| 3. Constraints, Invariants, and Assumptions | Complete | Facts, assumptions, and questions separated; load-bearing items gated; subject behavior and evaluator coverage cannot be conflated |
 | 4. Design Space Decomposition | Complete | Thirteen surfaces and sourcing applicability recorded |
 | 5. Option Families | Complete | Internal, OSS, managed, custom, hybrid, conservative, and experiment paths considered |
 | 6. Candidate Elaboration | Complete | Five falsifiable candidates include boundaries, ownership, cost, failure, and exit |
-| 7. Stress Scenarios and Failure Modes | Complete | Fifteen scenarios include configuration conflict and an identical-case candidate audit in addition to nominal, failure, misuse, rollback, supplier, and future-change pressure |
+| 7. Stress Scenarios and Failure Modes | Complete | Fifteen scenarios include a deterministic context-isolation/shared-artifact subagent contract, configuration conflict, and an identical-case candidate audit in addition to nominal, failure, misuse, rollback, supplier, and future-change pressure |
 | 8. Trade Study | Complete | Hard screening precedes scoring; TCO bands, evidence-sensitive rationale, indifference band, arithmetic sensitivities, and a deterministic post-R0 selection rule are explicit |
 | 9. Source Doctrine Validation | Complete | Applicable lenses used as tests; security retains an empirical risk |
 | 10. Selected Design Decision Record | Complete | Provisional selection, unrejected comparator, configuration decision, risks, owners, and exit triggers recorded |
-| 11. Uncertainty, Experiments, and R0 Gates | Deferred | Correctly routes trace, configuration, isolation, provenance, export, ergonomics, and candidate sensitivity to comparative R0 |
+| 11. Uncertainty, Experiments, and R0 Gates | Deferred | Correctly routes trace, configuration, isolation, provenance, export, ergonomics, and candidate sensitivity to comparative R0; `R0-SUB-1@1` supplies byte-exact stimuli and digests, exact single-subagent construction, oracle evidence, partial order, lane-specific scoring, and stop conditions |
 | 12. Handoff to design-spec | Deferred | Exact packet and sidecar paths plus authority, versions, risks, selection rule, and sourcing commitments are preserved |
 
 ### Design-Space Adequacy
 
 | Dimension | Score | Review note |
 | --- | ---: | --- |
-| Problem framing | 3/3 | Empty state and comparison problem are explicit without assuming a runner |
+| Problem framing | 3/3 | Kickoff state, current implementation gap, and comparison problem are explicit without assuming a runner |
 | Surface decomposition | 3/3 | Technical, evaluation, operational, security, sourcing, and change surfaces are separated and coupled |
 | Sourcing evidence | 3/3 | Current primary docs, registries, repositories, versions, licenses, and limitations cover viable classes |
 | Option generation | 3/3 | Options differ materially in ownership, runner scope, integration, data boundary, and exit |
 | Candidate elaboration | 3/3 | Five candidates are falsifiable; the two viable leaders name their actual execution and trust boundaries |
-| Scenario stress | 3/3 | Fifteen scenarios challenge core quality attributes, configuration authority, candidate sensitivity, and selected risks |
+| Scenario stress | 3/3 | Fifteen scenarios challenge core quality attributes, configuration authority, candidate sensitivity, and selected risks; the subagent R0 now makes both positive visibility and non-leak claims falsifiable |
 | Trade study | 3/3 | Hard failures are screened, weights reflect preference strength, score bases and TCO are explicit, and a one-point result is correctly treated as indifference rather than victory |
 | Uncertainty routing | 3/3 | Discoverable facts are resolved in the packet; integration and selection-sensitive claims are routed to a bounded same-case R0 with a deterministic close rule |
 
@@ -567,7 +680,7 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | DP-3 | Major | Resolved | Security/operations | Shell and filesystem exploration could mutate the host or expose credentials | Added `CON-6`, `CON-7`, `SCN-7`, `RISK-4`, and blocking `VAL-4` | Packet author |
 | DP-4 | Minor | Resolved | Reproducibility | A package version alone would not identify a local OSS checkout | Added release/local lanes, Git SHA/dirty provenance, comparison-key rule, and `VAL-1` | Packet author |
 | DP-5 | Minor | Resolved | Evaluation validity | A single aggregate could hide judge drift, hard policy failure, or stochastic variance | Added deterministic precedence, score separation, epochs, re-scoring, and no-hidden-failure requirement | Packet author |
-| DP-6 | Observation | Open | Repository workflow | The preferred `.worktrees/` workflow cannot be used until the empty directory becomes a Git repository with an initial commit | `design-spec`/implementation kickoff shall initialize Git, create the base commit, then perform implementation in `.worktrees/` | Repository maintainer |
+| DP-6 | Observation | Resolved | Repository workflow | The preferred `.worktrees/` workflow could not be used until the empty directory became a Git repository with an initial commit | Repository initialization is complete; this revision is executing in repository-local `.worktrees/sharpen-subagent-r0` | Repository maintainer |
 | DP-7 | Observation | Open | Human decision | Default execution model, judge, budget, and CI lane remain intentionally undecided | Resolve `Q-1`, `Q-2`, and `VAL-7` before canonical baseline publication | Repository maintainer |
 | DP-8 | Major | Resolved | Technology sourcing and trace evaluation | LangSmith was initially represented as a managed result sink without enough weight on its full offline traces, intermediate child runs, trajectory evaluators, and online run/thread evaluation | Added current trace-eval, pricing, retention, self-hosting, sandbox, and export evidence; promoted LangSmith to `CAND-5`; stress-tested and scored it; retained it as an unrejected mandatory comparator | Packet author |
 | DP-9 | Major | Resolved | Candidate mechanism and security | The selected Inspect candidate conflated in-process `agent_bridge()` with containerized execution and credited sandbox isolation that provisioning alone does not provide | Split CAND-4 into trusted Lane A and containerized Lane B; required `sandbox_agent_bridge()` plus `sandbox().exec()` for privileged cases; re-scored isolation; strengthened `VAL-4` | Packet author |
@@ -575,22 +688,29 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | DP-11 | Major | Resolved | Trade study and uncertainty routing | The original R0 tested only Inspect even though LangSmith could become selected under the packet's own sensitivity analysis | Added current LangSmith sandbox/export evidence, corrected weights and scores, defined an eight-point indifference band, added same-case `SCN-15`/`VAL-9`, and made CAND-5 an unrejected mandatory comparator | Packet author |
 | DP-12 | Minor | Resolved | Evaluation validity | The original 12-20-case wording overstated a seed suite and did not define variance or inconclusive behavior | Reframed the corpus as a 14-21-case seed suite and added category coverage, repetitions, paired analysis, variance, safety, and inconclusive requirements to `VAL-6` | Packet author |
 | DP-13 | Minor | Resolved | Durable handoff | The handoff said to read the exact packet but did not embed the packet, checksum, and validation paths | Added all three absolute paths and a read/verify-first instruction to Section 12 | Packet author |
+| DP-14 | Major | Resolved | Subagent R0 validity and trade-study evidence | The original parent/subagent case did not fix a stimulus, expected artifact, context-isolation oracle, event order, or failure taxonomy, so a missing child event could be mistaken for successful isolation or an agent failure could be blamed on the evaluator | Added `CON-12`, pinned-release evidence `SRC-17`, supporting sample `SRC-18`, the `R0-SUB-1@1` fixture and canary, runner-neutral evidence, a required partial order, separate scoring lanes, bounded repetition/inconclusive rules, and candidate-specific `VAL-2`/`VAL-9` evidence | Packet author |
+| DP-15 | Major | Resolved | Subagent failure classification | The first sharpened draft could classify a child that explicitly echoed the canary as a DeepAgents isolation failure and required only one nominal repetition across both candidates | Made a compliant E4 receipt the precondition for the canary non-leak assertion, classified explicit child echo as `agent_failure`, required a nominal repetition per candidate, and required faithful traces of failed behavior | Packet author |
+| DP-16 | Major | Resolved | Subagent R0 oracle independence | E6 used per-model candidate evidence as its own completeness oracle, allowing a candidate trace to validate its own context-isolation claim | Defined a lab-owned runner-neutral event/rendered-model-input oracle populated before candidate export; made E1-E6 independent evidence candidate-free; require each candidate trace to match the oracle | Packet author |
+| DP-17 | Minor | Resolved | Subagent R0 pass condition | The nominal repetition rule claimed positive trace coverage without requiring the adapter-observability lane to pass | Require one repetition per candidate to pass agent behavior, DeepAgents semantics, and adapter observability together | Packet author |
+| DP-18 | Minor | Resolved | Problem framing | Mission and sourcing text described the kickoff empty directory as the present state after repository initialization | Reframed the text as an explicit kickoff baseline and recorded the remaining current evaluation implementation gap | Packet author |
+| DP-19 | Major | Resolved | Subagent R0 reproducibility | The reviewed `R0-SUB-1@1` revision fixed only semantic prompt and fixture requirements, so materially different model-visible stimuli and fixture serializations could share one case identity | Added six byte-exact authoritative stimulus blocks with canonical SHA-256 digests, an encoding/revision rule, exact construction/profile assertions, rendered-input digest equality, and manifest evidence in `VAL-2`/`VAL-9` | Packet author |
+| DP-20 | Observation | Resolved | Subagent construction | DeepAgents `0.7.8` auto-adds `general-purpose`, contradicting the intended one-subagent inventory unless its harness profile disables the default | Added `SRC-19`, exact-model profile registration, a resolved-profile assertion, and an exact exposed-subagent inventory check | Packet author |
 
 ### Source-Doctrine and Decision-Chain Result
 
 Source doctrine result: Pass for comparative R0 readiness. Trust boundaries and candidate sensitivity are explicit experiment gates rather than optimistic mechanism claims.
 
-Decision chain result: Pass. Stakeholder concerns trace through constraints, surfaces, criteria, stress scenarios, provisional decision, and validation gates. Hard-constraint failures are screened before scoring, and the one-point candidate difference is not presented as decisive.
+Decision chain result: Pass. Stakeholder concerns trace through constraints, surfaces, criteria, stress scenarios, provisional decision, and validation gates. Hard-constraint failures are screened before scoring, subject behavior is separated from evaluator coverage, candidate traces are checked against an independent runner-neutral oracle, and the one-point candidate difference is not presented as decisive.
 
 ### Validation Result
 
-Passed on 2026-08-22. The fleet-policy validation evidence reported `engineVersion: 3.5.0`, Node runtime `v22.20.0`, profile syntax `markdown-engine.validation@v1`, 42 of 42 rules passed, and zero diagnostics. The wrapper does not support a standalone `--version` argument; the required active engine version was taken from the successful validation evidence. A final validation sidecar and SHA-256 checksum accompany this packet.
+Passed on 2026-08-26 after the `R0-SUB-1@1` canonical-stimulus/profile remediation and third internal review. The fleet-policy validation evidence reported `engineVersion: 3.5.0`, Node runtime `v22.20.0`, profile syntax `markdown-engine.validation@v1`, 42 of 42 rules passed, and zero diagnostics. The wrapper does not support a standalone `--version` argument; the required active engine version was taken from the successful validation evidence. A refreshed validation sidecar and SHA-256 checksum accompany this packet.
 
 ### Unresolved Findings
 
 - No open `Blocker` or `Major` review finding remains in the authored reasoning.
 - `VAL-1` through `VAL-5` and `VAL-9` are empirical R0 gates, not packet defects.
-- `DP-6` and `DP-7` are non-blocking observations for this design-process deliverable.
+- `DP-7` is the only open non-blocking observation for this design-process deliverable.
 
 ### Readiness Verdict
 
