@@ -66,17 +66,23 @@ coordinates are:
 - Graph ID: `deepagents_lab`
 - API documentation: `http://127.0.0.1:2024/docs`
 
-Install all frozen dependency groups, supply the provider credential in the
-server process, explicitly disable tracing, and start the server:
+Create the ignored local environment file once:
 
 ```bash
-uv sync --frozen --all-groups
-export OPENAI_API_KEY="..."
-export LANGSMITH_TRACING=false
-unset LANGSMITH_API_KEY
-uv run --frozen langgraph dev --config langgraph.json \
-  --host 127.0.0.1 --port 2024 --no-browser
+cp .env.example .env
 ```
+
+Add `OPENAI_API_KEY` to `.env`. Retain `LANGSMITH_TRACING=false`, or set it to
+`true` and add the optional LangSmith key and project values from the template.
+Then start the fixed loopback server with one command:
+
+```bash
+uv run --frozen deepagents-server
+```
+
+`deepagents-server` loads `.env` through `langgraph.json`, binds to
+`127.0.0.1:2024`, and suppresses automatic browser launch. No manual exports
+are required.
 
 The server starts and exposes basic discovery without either an OpenAI or
 LangSmith credential. `OPENAI_API_KEY` is required when the server materializes
