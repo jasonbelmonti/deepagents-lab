@@ -17,6 +17,7 @@ dependencies = [
 [project.scripts]
 deepagents-live = "deepagents_lab.live:main"
 deepagents-server = "deepagents_lab.server_cli:main"
+deepagents-ui = "deepagents_lab.ui_cli:main"
 
 [dependency-groups]
 dev = [

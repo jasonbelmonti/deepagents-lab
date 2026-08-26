@@ -1,0 +1,3 @@
+[submodule "apps/agent-chat-ui"]
+	path = apps/agent-chat-ui
+	url = https://github.com/langchain-ai/agent-chat-ui.git

@@ -1,6 +1,6 @@
 # DeepAgents Lab
 
-DeepAgents Lab is a local-first Python repository for controlled experiments with the [DeepAgents OSS library](https://github.com/langchain-ai/deepagents). The current repository is only the bootstrap for the comparative R0 described in the [design process packet](docs/design/deepagents-lab-design-process.md).
+DeepAgents Lab is a local-first workbench for controlled experiments with the [DeepAgents OSS library](https://github.com/langchain-ai/deepagents). It includes a Python Agent Server and an exact-pinned, unmodified upstream Agent Chat UI submodule for browser-based experiments. The comparative evaluation baseline remains governed by the [design process packet](docs/design/deepagents-lab-design-process.md).
 
 The evaluation baseline has not been selected. Inspect AI is the provisional open-source target and LangSmith trace evaluation is the required same-case control. The R0 evidence, eight-point indifference band, and decision rule in the design packet govern the eventual choice.
 
@@ -12,6 +12,7 @@ The evaluation baseline has not been selected. Inspect AI is the provisional ope
 - LangChain's OpenAI integration for live model calls
 - LangGraph CLI `0.4.31` with the in-memory Agent Server development runtime
 - LangSmith SDK `0.11.1` in the `langsmith-control` dependency group
+- Node.js `22.20.0` and Corepack; the upstream Agent Chat UI package pins pnpm
 
 Install the frozen environment, including the development and control groups:
 
@@ -107,6 +108,47 @@ The exact `langgraph-cli[inmem]==0.4.31` development dependency resolves
 the [Elastic License 2.0](https://pypi.org/project/langgraph-api/) and is kept at
 this local development boundary. It is not represented here as an OSI
 open-source or production deployment component.
+
+## Local Agent Chat UI
+
+`apps/agent-chat-ui` is a Git submodule pointing directly to LangChain's
+[Agent Chat UI repository](https://github.com/langchain-ai/agent-chat-ui) at an
+exact commit. The lab does not copy, patch, or maintain upstream UI source.
+
+From a clean checkout, create `.env` as described above, then start the accepted
+server in terminal 1:
+
+```bash
+uv sync --frozen --all-groups
+uv run --frozen deepagents-server
+```
+
+Start the UI in terminal 2:
+
+```bash
+uv run --frozen deepagents-ui
+```
+
+`deepagents-ui` initializes the exact-pinned submodule, installs from its frozen
+pnpm lock, and runs the unchanged upstream application on
+`http://127.0.0.1:3000`. It supplies the upstream-supported deployment URL
+`http://127.0.0.1:2024` and graph ID `deepagents_lab`, so no setup form or UI
+environment file is needed for the lab workflow.
+
+The launcher removes inherited OpenAI, LangSmith, deployment-proxy, UI-auth,
+and AI-agent detection variables before starting the UI process. Model and
+optional tracing credentials remain in the Python server process, while the
+detection cleanup prevents Next.js from generating untracked agent-instruction
+files inside the submodule. Agent Chat UI itself remains unmodified and retains
+all capabilities provided by upstream.
+
+Submit a message, continue the same thread with a second message, and use
+**New Thread** in the thread-history panel to start an isolated chat. Stop both
+processes with `Ctrl-C`.
+
+Submodule dependencies, Next.js build output, local environment files, browser
+evidence, and Agent Server runtime state are ignored. This application is a
+local development surface, not evaluation evidence or a production deployment.
 
 ## Repository workflow
 
