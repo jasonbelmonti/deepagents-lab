@@ -18,10 +18,10 @@ def test_langgraph_config_registers_one_local_graph() -> None:
     config = json.loads((REPOSITORY_ROOT / "langgraph.json").read_text())
 
     assert config["dependencies"] == ["."]
+    assert config["env"] == ".env"
     assert config["graphs"] == {
         "deepagents_lab": "./src/deepagents_lab/server.py:graph"
     }
-    assert "env" not in config
     assert "OPENAI_API_KEY" not in json.dumps(config)
     assert "LANGSMITH_API_KEY" not in json.dumps(config)
 
