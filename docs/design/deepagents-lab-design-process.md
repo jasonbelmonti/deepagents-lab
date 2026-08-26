@@ -7,13 +7,13 @@
 | Title | DeepAgents OSS Experiment Lab and Evaluation Baseline |
 | Status | Ready for R0 Experiment |
 | Packet owner | Repository maintainer |
-| Reviewers | Codex internal remediation review complete; convergent review Round 2 and maintainer review pending |
+| Reviewers | Codex internal remediation, convergent review Round 2, and workbench-reconciliation review complete; maintainer review pending |
 | Decision owner | Repository maintainer |
 | Downstream target | `R0 experiment`, then `design-spec` if the gates pass |
 | Expected downstream rigor | `R1` |
 | Last updated | 2026-08-26 |
 | Related docs | Validation and checksum sidecars named in Section 12 |
-| Related tickets | None provided |
+| Related tickets | `docs/tasks/add-local-agent-server.md`; `docs/tasks/add-local-agent-chat-ui.md` |
 
 ## 0. Design Mission Summary
 
@@ -27,7 +27,7 @@ At kickoff on 2026-08-22, the target directory had no repository, dependency pol
 
 Selected direction:
 
-Run a comparative R0 around a provisional local-first direction. Keep small lab-owned contracts for agent variants, evaluation cases, run records, and scores. Implement the first local runner adapter with open-source Inspect AI `0.3.260`, but separate its execution into a trusted in-process `agent_bridge()` lane and a containerized `sandbox_agent_bridge()` lane. The in-process lane is not a security boundary and may not expose shell or host-filesystem capabilities. The containerized lane runs DeepAgents itself inside the sample sandbox for privileged cases. Use Inspect-owned generation configuration for the canonical comparison lane and record the effective configuration. Evaluate released DeepAgents `0.7.8` by default while preserving an exact local-checkout path. Run the same tool and subagent cases through a LangSmith trace-evaluation control before final runner selection. Deterministic outcome and artifact checks remain primary; trajectory constraints apply where behavior is part of the claim; model-judge scoring is versioned and used only where code cannot determine success.
+Run a comparative R0 around a provisional local-first direction. Keep small lab-owned contracts for agent variants, evaluation cases, run records, and scores. Implement the first local runner adapter with open-source Inspect AI `0.3.260`, but separate its execution into a trusted in-process `agent_bridge()` lane and a containerized `sandbox_agent_bridge()` lane. The in-process lane is not a security boundary and may not expose shell or host-filesystem capabilities. The containerized lane runs DeepAgents itself inside the sample sandbox for privileged cases. Use Inspect-owned generation configuration for the canonical comparison lane and record the effective configuration. Evaluate released DeepAgents `0.7.8` by default while preserving an exact local-checkout path. Run the same tool and subagent cases through a LangSmith trace-evaluation control before final runner selection. Deterministic outcome and artifact checks remain primary; trajectory constraints apply where behavior is part of the claim; model-judge scoring is versioned and used only where code cannot determine success. Separately, provide a loopback-only development workbench by exposing the shared compiled graph through local Agent Server and connecting the maintained Agent Chat UI. The workbench is an interaction surface, not an evaluator, and shall not make LangSmith authoritative or required for local use.
 
 Top risks or unknowns:
 
@@ -72,6 +72,7 @@ In scope:
 - A first baseline evaluation portfolio and comparison method.
 - Local execution, optional CI execution, observability, safety, reproducibility, and upgrade/exit posture.
 - Compatibility with released DeepAgents and an exact local source checkout.
+- A local interaction workbench boundary that reuses the same agent construction without becoming evaluation evidence.
 
 Out of scope:
 
@@ -81,6 +82,7 @@ Out of scope:
 - Proving benchmark validity across every DeepAgents use case.
 - Contributing changes upstream to DeepAgents or any evaluation framework.
 - Production adoption or standing configuration of a commercial observability service. One bounded, sanitized LangSmith Developer-plan control is in scope for R0 because it is required to settle the sourcing decision.
+- A custom product UI, public workbench hosting, production Agent Server deployment, or using workbench conversations as evaluation results.
 
 Section status: Complete
 
@@ -88,7 +90,7 @@ Section status: Complete
 
 | Stakeholder or role | Concern | Viewpoint required | Required action |
 | --- | --- | --- | --- |
-| Repository maintainer and experiment author | Fast creation of techniques without copying runner or scoring plumbing | Developer workflow and experiment authoring | Approve |
+| Repository maintainer and experiment author | Fast creation of techniques and interactive sessions without copying runner, scoring, or agent-construction plumbing | Developer workflow, experiment authoring, and local workbench | Approve |
 | DeepAgents OSS contributor | Reproduce behavior against a released package or exact local commit | Dependency provenance and source-checkout compatibility | Review |
 | Evaluation author | Cases and scores express task success without overfitting one valid trajectory | Dataset, scoring, and statistical validity | Review |
 | Reviewer of a technique | Compare variants with controlled inputs and inspect failure evidence | Results, traceability, and review ergonomics | Consult |
@@ -107,7 +109,7 @@ Section status: Complete
 
 | ID | Type | Statement | Source or basis | Design impact |
 | --- | --- | --- | --- | --- |
-| CON-1 | Constraint | The lab and primary extension interfaces shall be Python. | User request and DeepAgents Python package | Excludes a Node-first runner as the baseline. |
+| CON-1 | Constraint | The lab's experiment, evaluation, and primary extension interfaces shall be Python. A maintained non-Python workbench client may remain behind the Agent Server API and may not define evaluation meaning. | User request, DeepAgents Python package, and later workbench decision | Excludes a Node-first runner while permitting a contained maintained UI client. |
 | CON-2 | Constraint | DeepAgents is the system under test; the evaluator shall not require rewriting the technique as a native evaluator-framework agent. | Lab mission | Requires bring-your-own-agent execution. |
 | CON-3 | Invariant | A comparison run shall record the exact DeepAgents source, model and effective generation settings exposed by the runner/provider, an explicit `provider_default` marker for any unreported value, configuration authority, agent variant, case revision, evaluator version, scorer/judge settings, limits, and repetition/epoch. | Reproducibility concern | Requires a run manifest, effective-configuration capture without fabricated defaults, and stable identifiers. |
 | CON-4 | Invariant | Experiment modules shall not import evaluator-framework types. | Change-containment concern | Requires a lab contract and adapter boundary. |
@@ -119,6 +121,7 @@ Section status: Complete
 | CON-10 | Invariant | A technique under test shall vary one declared experimental factor at a time unless the experiment explicitly declares a factorial design. | Causal interpretation | Variant manifests declare control and changed factors. |
 | CON-11 | Invariant | Every runner lane shall declare exactly one generation-configuration authority. During comparative R0, CAND-4 uses Inspect-owned configuration with bridge forwarding disabled, while CAND-5's repository target receives the matched explicit configuration. Any Inspect technique that requires agent-owned parameters shall run in a separately named lane with `forward_generation_config=True` and a distinct comparison key. | Inspect bridge generation-config semantics and comparison fairness | Removes ambiguous parameter precedence without presupposing the final runner and prevents unlike effective configurations from sharing a baseline series. |
 | CON-12 | Invariant | Agent behavior, DeepAgents state semantics, harness validity, and evaluator observability shall be recorded as separate outcomes. A missing evaluator event shall not be scored as an agent failure, and absence from an incomplete trace shall not be accepted as proof of context isolation. | Evaluation validity and comparative-runner fairness | Requires independent deterministic checks against canonical agent state plus a separate per-adapter trace-coverage result and failure taxonomy. |
+| CON-13 | Invariant | The local development workbench shall reuse one repository-owned compiled graph through a loopback-only Agent Server, keep model credentials server-side, require no LangSmith account or trace upload, and remain separate from evaluation-runner selection and evidence. | Maintainer workbench decision dated 2026-08-26 | Requires a shared construction boundary, local API contract, explicit tracing disablement, and an independently owned UI task. |
 | ASM-1 | Assumption | Python 3.12 and `uv` are acceptable defaults for the new repository. | Both selected packages support the interpreter; `uv` provides locking and ephemeral source overrides | Non-load-bearing; the design remains compatible with another lock-capable Python tool. |
 | ASM-2 | Assumption | Docker is available where shell-execution scenarios run. | Inspect supplies a built-in Docker sandbox; local environment not yet checked | Load-bearing only for the shell baseline; routed to `VAL-4`. |
 | ASM-3 | Assumption | The maintainer can provide at least one model-provider credential for R0. | Agent bridge smoke test needs real model traffic unless a compatible fake path is proven | Routed to `VAL-2`; no provider is selected here. |
@@ -145,7 +148,7 @@ Section status: Complete
 | SURF-10 | Change containment | Both core dependencies are fast-moving pre-1.0 packages | Variable | CON-4, Q-3 |
 | SURF-11 | CI and operating controls | Provider failures, concurrency, cost caps, and interrupted runs affect trust and usability | Variable | CON-3, Q-2 |
 | SURF-12 | Managed trace evaluation and observability | LangSmith can evaluate full offline traces and online runs/threads, but changes account, retention, cost, and data boundaries | Variable; compare as a first-class candidate and retain an extension seam | CON-6, CON-8 |
-| SURF-13 | User interface | A dedicated lab web application does not improve the first design decision | Fixed: use CLI and evaluator-provided result viewer | Scope boundary |
+| SURF-13 | Local interaction workbench | Interactive streaming and thread inspection improve technique development, but a custom UI would duplicate maintained infrastructure and must not redefine evaluation truth | Fixed by maintainer: loopback Agent Server plus maintained Agent Chat UI; no custom product UI; evaluation remains separate | CON-1, CON-6, CON-8, CON-13 |
 
 Surface coupling notes:
 
@@ -154,6 +157,7 @@ Surface coupling notes:
 - `SURF-5`, `SURF-6`, and `SURF-7` determine validity. A filesystem task is only meaningful if each sample gets a known initial workspace and deterministic post-run checks. For a subagent case, canonical state proves agent and shared-artifact behavior while the candidate trace separately proves that it observed the hidden child execution.
 - `SURF-7` and `SURF-11` share resource and safety controls; high concurrency must not multiply unbounded sandboxes or model spend.
 - `SURF-7`, `SURF-8`, and `SURF-12` distinguish evaluation from execution: a trace or sandbox product may observe or host a run, but the packet must name exactly where the agent process, tools, model proxy, credentials, and network boundary reside.
+- `SURF-3` and `SURF-13` share agent construction but not lifecycle authority: the CLI and Agent Server import the same graph factory, while Agent Chat UI remains an API client and workbench interactions remain outside comparison records.
 
 Technology sourcing applicability: Applicable
 
@@ -161,7 +165,7 @@ Applicability rationale:
 
 The lab could adopt an open-source runner, use a managed evaluation platform, combine libraries with pytest, or build its own harness. Those choices materially change agent integration, result provenance, sandboxing, lifecycle cost, and exit posture. At kickoff no repository-local evaluation capability existed. The initialized repository now supplies locked dependencies and live-model smoke coverage, but no comparative evaluation runner or reusable case/scoring baseline exists to reuse.
 
-Research cutoff date: 2026-08-22 for candidate selection and time-sensitive sourcing inputs; targeted DeepAgents subagent-semantics refresh observed 2026-08-26.
+Research cutoff date: 2026-08-22 for candidate selection and time-sensitive evaluator inputs; targeted DeepAgents subagent-semantics and local-workbench sourcing refreshes observed 2026-08-26.
 
 Section status: Complete
 
@@ -188,6 +192,9 @@ Section status: Complete
 | SRC-17 | Maintainer documentation and release source | DeepAgents subagents run in isolated message context and return one final report. In release `0.7.8`, `SubAgentMiddleware` removes parent `messages`, `todos`, and structured output from child input, installs the delegation description as the child's only human message, and adds only the final child result to the parent message history while forwarding non-private shared state such as files. `create_deep_agent` installs the same backend in the parent and dictionary-subagent filesystem middleware. | [Subagents documentation](https://docs.langchain.com/oss/python/deepagents/subagents), [`SubAgentMiddleware` at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/middleware/subagents.py), and [`create_deep_agent` backend wiring at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/graph.py) | Tag commit `1e261ba201bb1af4dbc5cbc8b6424e709b850ea8`; observed 2026-08-26 | Primary evidence for the pinned release's intended state boundary; model compliance and evaluator visibility remain empirical. A custom `CompiledSubAgent` is not covered by the shared-backend claim. |
 | SRC-18 | Maintainer sample | The Deep Agents Deep Dive demonstrates a dictionary subagent writing an artifact to a shared backend, returning only a path receipt, and the supervisor reading that artifact while the child's intermediate tool calls stay outside the supervisor transcript. | [Deep Dive basics notebook](https://github.com/langchain-samples/deepagents-deep-dive/blob/6cc94f911d1b78a4b91c5ad5b83f0018643f0843/deepagents-basics.ipynb) | Commit `6cc94f911d1b78a4b91c5ad5b83f0018643f0843`; observed 2026-08-26 | Maintainer sample, not a normative evaluator contract. It allows `deepagents>=0.6.12`, targets Python 3.13, and exposes no repository license through GitHub; no implementation is copied into this lab. |
 | SRC-19 | Pinned release source and local locked-package inspection | DeepAgents `0.7.8` auto-adds a synchronous `general-purpose` subagent unless the active `HarnessProfile` sets `general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False)` or a caller supplies a subagent with that reserved name. Public `register_harness_profile()` applies the setting for an exact model spec before `create_deep_agent()` resolves the profile. | [`create_deep_agent` at `deepagents==0.7.8`](https://github.com/langchain-ai/deepagents/blob/deepagents%3D%3D0.7.8/libs/deepagents/deepagents/graph.py) and the locked installed package | `0.7.8`; observed 2026-08-26 | The profile API is beta. R0 must assert the resolved profile and exposed subagent inventory rather than assume registration succeeded. |
+| SRC-20 | Maintainer documentation | `langgraph dev` starts a development Agent Server on loopback by default, loads graph IDs from `langgraph.json`, exposes API documentation, and supports streamed SDK/API runs. The local-server guide currently lists a LangSmith key as a prerequisite even though tracing can be disabled. | [Local Agent Server](https://docs.langchain.com/oss/python/langgraph/local-server), [application structure](https://docs.langchain.com/oss/python/langgraph/application-structure), and [CLI reference](https://docs.langchain.com/langsmith/cli) | Observed 2026-08-26 | Primary documentation establishes the mechanism and default listener; keyless startup remains an implementation gate because the prerequisite wording is inconsistent with the selected no-account boundary. |
+| SRC-21 | Maintainer documentation and source | Agent Chat UI is an MIT-licensed Next.js client for a LangGraph server with a `messages` key; it accepts a graph ID and local Agent Server URL, and its documentation says a LangSmith API key is not required for a local server. | [Agent Chat UI documentation](https://docs.langchain.com/oss/python/langgraph/ui) and [source repository](https://github.com/langchain-ai/agent-chat-ui) | Observed 2026-08-26 | Supports the maintained-client choice; exact upstream provenance, browser credential isolation, and compatibility require the separate UI task. |
+| SRC-22 | Package registry | `langgraph-api` `0.13.0` is the current stable development-runtime release for Python `>=3.11` and is licensed under Elastic License 2.0. | [PyPI `langgraph-api`](https://pypi.org/project/langgraph-api/) | `0.13.0`, uploaded 2026-08-21; observed 2026-08-26 | The development server is source-available but not an OSI-open-source runtime; exact locking, disclosure, and replacement posture are required. |
 
 | ID | Option family | Sourcing class | Summary | Surfaces varied | Promoted to candidate? | Rationale |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -275,6 +282,7 @@ Section status: Complete
 | SCN-13 | Future managed observability | Maintainer later wants LangSmith trace comparison without replacing local truth | CAND-1 through CAND-5 | Add an optional sink; local cases/manifests/results remain authoritative | CAND-4's run-record seam supports this; CAND-5 supplies it natively but must prove export/local authority |
 | SCN-14 | Generation-configuration conflict | Agent factory requests temperature, token, or reasoning settings that differ from the evaluator's model configuration | CAND-3, CAND-4 | One declared authority wins; the effective settings and dropped/forwarded behavior are observable; unlike lanes receive different comparison keys | CAND-4 resolves the canonical case with Inspect authority and forwarding disabled. `VAL-2` verifies effective settings. Agent-authoritative techniques require a distinct opt-in lane. CAND-3 has the same bridge semantics but spreads the policy across experiments. |
 | SCN-15 | Inspect-versus-LangSmith trace audit | Execute the identical deterministic tool case and `R0-SUB-1@1` with the same DeepAgents source, S1-S6 stimulus digests, model settings, limits, and repetitions | CAND-4, CAND-5 | Reconcile the fixed subagent partial order and coverage matrix, diagnose both successful and failed agent behavior without relabeling it as adapter failure, compare setup/diagnostic/export effort, and update only evidence-sensitive scores | Documentation predicts stronger native hierarchy in CAND-5 and stronger local-runner/exit posture in CAND-4. `VAL-9` is required because the current one-point weighted gap is not decision-significant. |
+| SCN-16 | Keyless local workbench | Start Agent Server on loopback with `LANGSMITH_API_KEY` absent and tracing disabled; connect the maintained UI using only the local URL and graph ID; stream two turns in one thread and create an isolated new thread | Fixed `SURF-13` workbench | The server starts without a LangSmith account or upload, the provider key remains server-only, the shared graph streams correctly, and thread continuity/isolation remain server-owned | Routed to `docs/tasks/add-local-agent-server.md` and then `docs/tasks/add-local-agent-chat-ui.md`; failure of keyless startup reopens the workbench mechanism but does not alter the evaluation trade study. |
 
 Section status: Complete
 
@@ -365,6 +373,9 @@ Accepted tradeoffs:
 - Accept that the first R0 and baseline require model-provider usage; do not pretend a seed makes LLM output deterministic.
 - Accept that native Inspect logs remain adapter-specific evidence while normalized summaries support cross-run comparison and future migration.
 - Accept the cost of one bounded LangSmith control run before final selection; its trace-evaluation capability and direct DeepAgents sandbox integration are decision-relevant evidence.
+- Accept the Elastic License 2.0 boundary of the local Agent Server development runtime and the separate Node dependency surface of the MIT Agent Chat UI in exchange for a maintained streaming/thread workbench; neither becomes the source of evaluation truth.
+
+Workbenches were not scored against `CAND-1`, `CAND-4`, or `CAND-5` because `SURF-13` answers an interaction question rather than the evaluation-runner sourcing question. The later maintainer decision fixes the workbench mechanism, while `SCN-16`, license disclosure, loopback containment, and the two successor tasks bound its implementation and exit risks.
 
 Section status: Complete
 
@@ -375,9 +386,9 @@ Section status: Complete
 | NASA systems design | Stakeholder needs were converted into constraints, then decomposed into experiment, runner, scoring, isolation, provenance, configuration, and lifecycle surfaces before selecting mechanisms | Pass | Revalidate after the comparative R0; do not let scaffold details silently redefine the mission |
 | ISO 42010 architecture description | User, contributor, evaluator, operator, security, reviewer, and maintainer concerns have distinct viewpoints and decision authority | Pass | A future `design-spec` shall add concrete module, data-flow, trust-boundary, and deployment views |
 | SEI ATAM | Modifiability, reproducibility, validity, safety, operability, cost, and ergonomics are expressed through scenarios, hard screening, an indifference band, arithmetic sensitivity points, and tradeoffs | Pass | Update only evidence-sensitive scores after `VAL-9`; preserve the selection rule |
-| Parnas information hiding | The lab contract hides evaluator registry/log/bridge changes; the agent factory hides released-versus-checkout construction; experiments expose only comparison-relevant data | Pass | `VAL-3` shall reject an adapter that leaks Inspect types or becomes a generic framework |
-| NIST SSDF and threat modeling | External components have provenance/version/owner/exit posture; Lane A is explicitly trusted; Lane B contains the agent process; provider-hosted tools, network egress, secret capture, unsafe tools, dependency churn, and vulnerability response are explicit | Risk bounded by R0 | Complete `VAL-4`; add automated dependency updates and a documented log-retention/redaction policy in `design-spec` |
-| SRE and Well-Architected operations | User-relevant signals, limits, retries, resumption, error states, usage, artifacts, configuration authority, isolation, rollback, lifecycle cost, and managed-service exit are considered | Pass for R0 | Measure control-run setup, diagnosis, export, cleanup, and spend; `design-spec` shall define concrete defaults and runbooks |
+| Parnas information hiding | The lab contract hides evaluator registry/log/bridge changes; one agent factory hides released-versus-checkout construction and is reused by the CLI and Agent Server; the UI sees only the local graph API | Pass | `VAL-3` shall reject evaluator leakage, while the Agent Server task shall reject duplicated agent construction |
+| NIST SSDF and threat modeling | External components have provenance/version/owner/exit posture; Lane A is explicitly trusted; Lane B contains the agent process; the workbench is loopback-only with server-owned credentials; provider-hosted tools, network egress, secret capture, unsafe tools, dependency churn, and vulnerability response are explicit | Risk bounded by R0 and focused workbench proof | Complete `VAL-4`; prove keyless loopback startup and client credential isolation; add automated dependency updates and a documented log-retention/redaction policy in `design-spec` |
+| SRE and Well-Architected operations | User-relevant signals, limits, retries, resumption, error states, usage, artifacts, configuration authority, isolation, rollback, lifecycle cost, managed-service exit, and local process cleanup are considered | Pass for R0 and local workbench implementation | Measure control-run setup, diagnosis, export, cleanup, and spend; prove workbench startup, thread behavior, listener containment, and teardown |
 
 Doctrine conflict:
 
@@ -393,13 +404,15 @@ Decision:
 
 `DEC-2`: The canonical Inspect-backed comparison lane uses Inspect-owned generation configuration with `forward_generation_config=False`. An agent-authoritative configuration is a separately named experimental lane and cannot share a comparison key.
 
+`DEC-3`: Use a loopback-only Agent Server plus the maintained Agent Chat UI as the local development workbench. The CLI and server share one repository-owned DeepAgents construction boundary; the UI consumes the graph API without provider credentials or a required LangSmith account. This decision does not select an evaluator, make workbench conversations evaluation evidence, authorize a custom UI, or authorize production deployment.
+
 Selected candidate:
 
 Provisional `CAND-4` — lab-owned experiment and result contracts with an Inspect AI `0.3.260` adapter, trusted and containerized execution lanes, and DeepAgents `0.7.8` or an explicitly recorded local commit. `CAND-5` remains an unrejected, required R0 comparator.
 
 Acquisition or ownership decision:
 
-Pin Inspect as an MIT-licensed R0 dependency and the LangSmith SDK as an optional, exactly locked control dependency. This does not authorize LangSmith as the authoritative service or approve recurring spend. The repository maintainer owns dependency upgrades, vulnerability response, adapters, scorer policy, container images, log retention, service-account/data-boundary approval, and replacement. The lab owns only its narrow domain contracts and deterministic scorer library; it does not fork or reproduce either platform. License observations are technical sourcing inputs, not legal advice.
+Pin Inspect as an MIT-licensed R0 dependency and the LangSmith SDK as an optional, exactly locked control dependency. This does not authorize LangSmith as the authoritative service or approve recurring spend. For the workbench, pin the MIT LangGraph CLI, the Elastic License 2.0 `langgraph-api` development runtime, and an exact MIT Agent Chat UI source revision under separate server and UI task boundaries. The repository maintainer owns dependency upgrades, vulnerability response, adapters, scorer policy, container images, log retention, service-account/data-boundary approval, workbench lifecycle, and replacement. The lab owns only its narrow domain contracts and deterministic scorer library; it does not fork or reproduce either evaluation platform or the maintained UI. License observations are technical sourcing inputs, not legal advice.
 
 Rationale:
 
@@ -423,10 +436,11 @@ Accepted risks:
 - `RISK-6` (owner: local operator): Docker may be unavailable or slow. Non-shell cases retain an ephemeral lane; shell baseline publication waits for `VAL-4`.
 - `RISK-7` (owner: repository maintainer): Requested and effective model settings can diverge at the Inspect bridge. Mitigate with `DEC-2`, manifest authority, effective-setting capture, and configuration assertions in `VAL-2`.
 - `RISK-8` (owner: decision owner): The framework choice is score-sensitive. Mitigate with the identical-case `VAL-9` control, the eight-point indifference band, and an explicit post-R0 decision record.
+- `RISK-9` (owner: repository maintainer): The local workbench could introduce a hidden LangSmith prerequisite, client-side provider credential, evaluator coupling, or an unexpectedly restrictive runtime boundary. Mitigate with loopback-only startup, tracing disabled, server-only credentials, explicit Elastic License disclosure, separate server/UI tasks, and a stop condition if keyless local operation fails.
 
 Exit trigger:
 
-Reopen sourcing immediately if `VAL-9` changes the provisional result under the Section 8 rule. After selection, reopen if the selected bridge cannot capture required semantics; the privileged lane cannot establish containment; two consecutive pinned upgrades require experiment-wide edits; maintenance or vulnerability response becomes unacceptable; license, plan, preview, governance, or data-boundary posture materially changes; required local export or re-scoring becomes unavailable; or another runner clears the same contract suite with at least 25% lower measured maintenance effort over three upgrades. On exit, retain lab cases and normalized results, add a replacement adapter, and keep old native evidence read-only.
+Reopen evaluation sourcing immediately if `VAL-9` changes the provisional result under the Section 8 rule. After selection, reopen if the selected bridge cannot capture required semantics; the privileged lane cannot establish containment; two consecutive pinned upgrades require experiment-wide edits; maintenance or vulnerability response becomes unacceptable; license, plan, preview, governance, or data-boundary posture materially changes; required local export or re-scoring becomes unavailable; or another runner clears the same contract suite with at least 25% lower measured maintenance effort over three upgrades. Reopen the workbench mechanism independently if Agent Server cannot operate locally without a LangSmith account or trace transfer, cannot preserve the shared construction boundary, exposes credentials/client access, or the ELv2 runtime becomes unacceptable. On evaluation exit, retain lab cases and normalized results, add a replacement adapter, and keep old native evidence read-only; on workbench exit, retain the graph contract and replace only the local interaction client/server seam.
 
 Decision owner:
 
@@ -439,6 +453,8 @@ Section status: Complete
 R0 mission:
 
 Prove the lab boundary and settle the evidence-sensitive Inspect-versus-LangSmith decision with the smallest credible vertical slice. Do not scaffold the full lab or claim a statistical baseline during R0.
+
+The local Agent Server and Agent Chat UI workbench is authorized through the two related task definitions and is not an R0 evaluator lane. Its implementation evidence does not close `VAL-1` through `VAL-9`, and its failure does not select between `CAND-4` and `CAND-5`.
 
 R0 slice:
 
@@ -590,6 +606,7 @@ Recommended downstream rigor:
 Source authority for design-spec:
 
 - Preserve provisional `CAND-4`, required comparator `CAND-5`, `DEC-1`, `DEC-2`, `CON-1` through `CON-12`, the selected risks, the hard screen, the eight-point indifference band, and the 18-month evaluation horizon until `VAL-9` records the final decision.
+- Preserve `DEC-3`, `CON-13`, and the separation between interaction and evaluation: the CLI and Agent Server share construction, Agent Chat UI consumes only the graph API, and no workbench interaction is accepted as evaluation evidence.
 - Pin and lock the evaluated releases from the research cutoff: DeepAgents `0.7.8`, Inspect AI `0.3.260`, and LangSmith SDK `0.11.1`. A newer version requires rerunning the affected R0 compatibility gates and updating this packet; do not silently substitute it.
 - Define small, focused modules for lab contracts, DeepAgents construction/source provenance, case fixtures, deterministic scorers, the selected runner adapter, the R0 control adapter or disposable comparison code, and result export. Keep experiment modules focused on the technique under study.
 - Specify canonical record schemas, stable identifiers, comparison-key rules, fixture lifecycle, scorer precedence, artifact layout/retention, CLI tasks, default limits, and error states.
@@ -604,6 +621,7 @@ Risks and gates to preserve:
 - Resolve `Q-1` and `VAL-7` before publishing baseline numbers or enabling non-local runs.
 - Preserve deterministic and judge scores separately. No aggregate may hide errors, limit terminations, or hard policy failures.
 - Treat evaluator logs as potentially sensitive. Define ignore, redaction, retention, cleanup, and optional sharing controls.
+- Keep the workbench loopback-only with tracing disabled and provider credentials server-side; treat its ELv2 runtime and MIT UI as separate, exactly pinned sourcing boundaries.
 
 Sourcing commitments to preserve:
 
@@ -623,6 +641,7 @@ Traceability notes:
 - `CON-6`/`CON-7` -> `SURF-7`/`SURF-11` -> `CRIT-3` -> `SCN-7` -> `VAL-4`.
 - `CON-3`/`CON-11` -> `SURF-8` -> `CRIT-2` -> `SCN-14` -> `DEC-2` -> `VAL-2`.
 - User OSS preference/`CON-8` -> `SURF-12` -> `CRIT-1`/`CRIT-5`/`CRIT-8` -> `SCN-15` -> `DEC-1` -> `VAL-9`.
+- Maintainer workbench decision/`CON-13` -> `SURF-3`/`SURF-13` -> `SCN-16` -> `DEC-3` -> `docs/tasks/add-local-agent-server.md` -> `docs/tasks/add-local-agent-chat-ui.md`.
 
 Section status: Deferred
 
@@ -648,13 +667,13 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | 1. Problem Frame and Decision Needed | Complete | Solution-independent kickoff baseline, current implementation gap, scope, and trigger recorded |
 | 2. Stakeholders, Concerns, and Viewpoints | Complete | Developer, evaluation, operations, security, review, and maintenance viewpoints covered |
 | 3. Constraints, Invariants, and Assumptions | Complete | Facts, assumptions, and questions separated; load-bearing items gated; subject behavior and evaluator coverage cannot be conflated |
-| 4. Design Space Decomposition | Complete | Thirteen surfaces and sourcing applicability recorded |
-| 5. Option Families | Complete | Internal, OSS, managed, custom, hybrid, conservative, and experiment paths considered |
+| 4. Design Space Decomposition | Complete | Thirteen surfaces and sourcing applicability recorded; interaction and evaluation remain distinct |
+| 5. Option Families | Complete | Internal, OSS, managed, custom, hybrid, conservative, and experiment paths considered; Agent Server and Agent Chat UI sourcing evidence added for the fixed workbench surface |
 | 6. Candidate Elaboration | Complete | Five falsifiable candidates include boundaries, ownership, cost, failure, and exit |
-| 7. Stress Scenarios and Failure Modes | Complete | Fifteen scenarios include a deterministic context-isolation/shared-artifact subagent contract, configuration conflict, and an identical-case candidate audit in addition to nominal, failure, misuse, rollback, supplier, and future-change pressure |
+| 7. Stress Scenarios and Failure Modes | Complete | Sixteen scenarios include a deterministic context-isolation/shared-artifact subagent contract, configuration conflict, an identical-case candidate audit, and keyless local workbench behavior in addition to nominal, failure, misuse, rollback, supplier, and future-change pressure |
 | 8. Trade Study | Complete | Hard screening precedes scoring; TCO bands, evidence-sensitive rationale, indifference band, arithmetic sensitivities, and a deterministic post-R0 selection rule are explicit |
 | 9. Source Doctrine Validation | Complete | Applicable lenses used as tests; security retains an empirical risk |
-| 10. Selected Design Decision Record | Complete | Provisional selection, unrejected comparator, configuration decision, risks, owners, and exit triggers recorded |
+| 10. Selected Design Decision Record | Complete | Provisional evaluator selection, unrejected comparator, configuration decision, fixed workbench decision, risks, owners, and independent exit triggers recorded |
 | 11. Uncertainty, Experiments, and R0 Gates | Deferred | Correctly routes trace, configuration, isolation, provenance, export, ergonomics, and candidate sensitivity to comparative R0; `R0-SUB-1@1` supplies byte-exact stimuli and digests, exact single-subagent construction, oracle evidence, partial order, lane-specific scoring, and stop conditions |
 | 12. Handoff to design-spec | Deferred | Exact packet and sidecar paths plus authority, versions, risks, selection rule, and sourcing commitments are preserved |
 
@@ -667,7 +686,7 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | Sourcing evidence | 3/3 | Current primary docs, registries, repositories, versions, licenses, and limitations cover viable classes |
 | Option generation | 3/3 | Options differ materially in ownership, runner scope, integration, data boundary, and exit |
 | Candidate elaboration | 3/3 | Five candidates are falsifiable; the two viable leaders name their actual execution and trust boundaries |
-| Scenario stress | 3/3 | Fifteen scenarios challenge core quality attributes, configuration authority, candidate sensitivity, and selected risks; the subagent R0 now makes both positive visibility and non-leak claims falsifiable |
+| Scenario stress | 3/3 | Sixteen scenarios challenge core quality attributes, configuration authority, candidate sensitivity, workbench containment, and selected risks; the subagent R0 makes both positive visibility and non-leak claims falsifiable |
 | Trade study | 3/3 | Hard failures are screened, weights reflect preference strength, score bases and TCO are explicit, and a one-point result is correctly treated as indifference rather than victory |
 | Uncertainty routing | 3/3 | Discoverable facts are resolved in the packet; integration and selection-sensitive claims are routed to a bounded same-case R0 with a deterministic close rule |
 
@@ -680,7 +699,7 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | DP-3 | Major | Resolved | Security/operations | Shell and filesystem exploration could mutate the host or expose credentials | Added `CON-6`, `CON-7`, `SCN-7`, `RISK-4`, and blocking `VAL-4` | Packet author |
 | DP-4 | Minor | Resolved | Reproducibility | A package version alone would not identify a local OSS checkout | Added release/local lanes, Git SHA/dirty provenance, comparison-key rule, and `VAL-1` | Packet author |
 | DP-5 | Minor | Resolved | Evaluation validity | A single aggregate could hide judge drift, hard policy failure, or stochastic variance | Added deterministic precedence, score separation, epochs, re-scoring, and no-hidden-failure requirement | Packet author |
-| DP-6 | Observation | Resolved | Repository workflow | The preferred `.worktrees/` workflow could not be used until the empty directory became a Git repository with an initial commit | Repository initialization is complete; this revision is executing in repository-local `.worktrees/sharpen-subagent-r0` | Repository maintainer |
+| DP-6 | Observation | Resolved | Repository workflow | The preferred `.worktrees/` workflow could not be used until the empty directory became a Git repository with an initial commit | Repository initialization is complete; the current server revision is executing in repository-local `.worktrees/agent-server` | Repository maintainer |
 | DP-7 | Observation | Open | Human decision | Default execution model, judge, budget, and CI lane remain intentionally undecided | Resolve `Q-1`, `Q-2`, and `VAL-7` before canonical baseline publication | Repository maintainer |
 | DP-8 | Major | Resolved | Technology sourcing and trace evaluation | LangSmith was initially represented as a managed result sink without enough weight on its full offline traces, intermediate child runs, trajectory evaluators, and online run/thread evaluation | Added current trace-eval, pricing, retention, self-hosting, sandbox, and export evidence; promoted LangSmith to `CAND-5`; stress-tested and scored it; retained it as an unrejected mandatory comparator | Packet author |
 | DP-9 | Major | Resolved | Candidate mechanism and security | The selected Inspect candidate conflated in-process `agent_bridge()` with containerized execution and credited sandbox isolation that provisioning alone does not provide | Split CAND-4 into trusted Lane A and containerized Lane B; required `sandbox_agent_bridge()` plus `sandbox().exec()` for privileged cases; re-scored isolation; strengthened `VAL-4` | Packet author |
@@ -695,6 +714,7 @@ Process depth: Full packet. The lab is local rather than live-user-facing, but t
 | DP-18 | Minor | Resolved | Problem framing | Mission and sourcing text described the kickoff empty directory as the present state after repository initialization | Reframed the text as an explicit kickoff baseline and recorded the remaining current evaluation implementation gap | Packet author |
 | DP-19 | Major | Resolved | Subagent R0 reproducibility | The reviewed `R0-SUB-1@1` revision fixed only semantic prompt and fixture requirements, so materially different model-visible stimuli and fixture serializations could share one case identity | Added six byte-exact authoritative stimulus blocks with canonical SHA-256 digests, an encoding/revision rule, exact construction/profile assertions, rendered-input digest equality, and manifest evidence in `VAL-2`/`VAL-9` | Packet author |
 | DP-20 | Observation | Resolved | Subagent construction | DeepAgents `0.7.8` auto-adds `general-purpose`, contradicting the intended one-subagent inventory unless its harness profile disables the default | Added `SRC-19`, exact-model profile registration, a resolved-profile assertion, and an exact exposed-subagent inventory check | Packet author |
+| DP-21 | Major | Resolved | Workbench authority and scope | The later maintainer decision selected Agent Server plus Agent Chat UI, contradicting the prior `SURF-13` exclusion of a dedicated interface and leaving interaction/evaluation ownership ambiguous | Added `CON-13`, current `SRC-20` through `SRC-22`, revised `SURF-13`, `SCN-16`, `DEC-3`, sourcing/exit controls, separate successor tasks, and explicit non-evaluation semantics | Packet author |
 
 ### Source-Doctrine and Decision-Chain Result
 
@@ -704,13 +724,14 @@ Decision chain result: Pass. Stakeholder concerns trace through constraints, sur
 
 ### Validation Result
 
-Passed on 2026-08-26 after the `R0-SUB-1@1` canonical-stimulus/profile remediation and third internal review. The fleet-policy validation evidence reported `engineVersion: 3.5.0`, Node runtime `v22.20.0`, profile syntax `markdown-engine.validation@v1`, 42 of 42 rules passed, and zero diagnostics. The wrapper does not support a standalone `--version` argument; the required active engine version was taken from the successful validation evidence. A refreshed validation sidecar and SHA-256 checksum accompany this packet.
+Passed on 2026-08-26 after the `R0-SUB-1@1` canonical-stimulus/profile remediation and workbench reconciliation. The fleet-policy validation evidence reported `engineVersion: 3.5.0`, Node runtime `v22.20.0`, profile syntax `markdown-engine.validation@v1`, 42 of 42 rules passed, and zero diagnostics. The wrapper does not support a standalone `--version` argument; the required active engine version was taken from the successful validation evidence. A refreshed validation sidecar and SHA-256 checksum accompany this packet.
 
 ### Unresolved Findings
 
 - No open `Blocker` or `Major` review finding remains in the authored reasoning.
 - `VAL-1` through `VAL-5` and `VAL-9` are empirical R0 gates, not packet defects.
 - `DP-7` is the only open non-blocking observation for this design-process deliverable.
+- Agent Server and Agent Chat UI implementation evidence is governed by the related tasks and remains separate from the open R0 gates.
 
 ### Readiness Verdict
 

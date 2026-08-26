@@ -7,9 +7,7 @@ import os
 import sys
 from collections.abc import Sequence
 
-from deepagents import create_deep_agent
-
-DEFAULT_MODEL = "openai:gpt-5.4"
+from deepagents_lab.agent import DEFAULT_MODEL, create_agent
 
 
 class MissingApiKeyError(RuntimeError):
@@ -23,7 +21,7 @@ def invoke_live(prompt: str, model: str = DEFAULT_MODEL) -> str:
             "OPENAI_API_KEY is not set; export it in this shell before running."
         )
 
-    agent = create_deep_agent(model=model)
+    agent = create_agent(model=model)
     result = agent.invoke({"messages": [{"role": "user", "content": prompt}]})
     return result["messages"][-1].text
 
