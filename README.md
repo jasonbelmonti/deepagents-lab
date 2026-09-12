@@ -23,10 +23,11 @@ git clone git@github.com:jasonbelmonti/deepagents-lab.git
 cd deepagents-lab
 ```
 
-Install the complete frozen Python environment:
+Install the frozen server, UI, and test environment. Notebook dependencies stay
+out of this default workflow:
 
 ```bash
-uv sync --frozen --all-groups
+uv sync --frozen --group langsmith-control
 ```
 
 ### 2. Configure local credentials
@@ -41,7 +42,7 @@ Open `.env` and add your OpenAI API key:
 
 ```dotenv
 OPENAI_API_KEY=your-key-here
-DEEPAGENTS_LAB_MODEL=openai:gpt-5.4
+DEEPAGENTS_LAB_MODEL=openai:gpt-5.6-luna
 
 LANGSMITH_TRACING=false
 LANGSMITH_API_KEY=
@@ -127,16 +128,52 @@ uv run --frozen deepagents-live \
   "Reply with exactly DEEPAGENTS_LIVE_OK and nothing else."
 ```
 
-The command uses `openai:gpt-5.4` by default. Override it through the command line
-or the `DEEPAGENTS_LAB_MODEL` environment variable documented in `.env.example`:
+The command uses `openai:gpt-5.6-luna` by default. Override it through the
+command line or the `DEEPAGENTS_LAB_MODEL` environment variable documented in
+`.env.example`:
 
 ```bash
-uv run --frozen deepagents-live --model openai:gpt-5.4 \
+uv run --frozen deepagents-live --model openai:gpt-5.6-luna \
   "Reply with exactly DEEPAGENTS_LIVE_OK and nothing else."
 ```
 
 A successful run prints the model's final assistant response. This is an opt-in
 provider call that incurs normal API usage; it is not yet an evaluation case.
+
+## Notebook experiments
+
+Install the optional notebook environment and open the tracked PTC/code
+interpreter reference with one command:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/reference/ptc-code-interpreter.ipynb
+```
+
+The reference demonstrates two distinct interpreter paths:
+
+- capability-scoped JavaScript execution through the QuickJS-backed `eval` tool;
+- programmatic tool calling (PTC), where that JavaScript calls one explicitly
+  allowlisted, read-only Python tool through the `tools.*` namespace.
+
+Run the cells marked **LIVE** to make OpenAI API calls using the same
+`OPENAI_API_KEY` and `DEEPAGENTS_LAB_MODEL` values as the rest of the lab. The
+notebook loads the repository's ignored `.env` file, so no manual export is
+required. Those calls incur normal provider usage and optionally emit LangSmith
+traces under the existing `.env` configuration.
+
+The `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
+Keep both files synchronized and output-free before committing:
+
+```bash
+uv run --frozen --group notebooks jupytext --sync \
+  notebooks/reference/ptc-code-interpreter.ipynb
+uv run --frozen --group notebooks jupyter nbconvert --clear-output --inplace \
+  notebooks/reference/ptc-code-interpreter.ipynb
+```
+
+See [the notebook workspace guide](notebooks/README.md) for the isolation and
+commit conventions.
 
 ## Local Agent Server
 
@@ -161,7 +198,7 @@ are required.
 
 The server starts and exposes basic discovery without either an OpenAI or
 LangSmith credential. `OPENAI_API_KEY` is required when the server materializes
-the configured `openai:gpt-5.4` graph for schema inspection or a run. The key
+the configured `openai:gpt-5.6-luna` graph for schema inspection or a run. The key
 stays in the server environment and is never sent to a local UI client. No
 LangSmith account, API key, Studio session, or trace upload is required for this
 workflow.

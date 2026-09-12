@@ -27,3 +27,14 @@ dev = [
 langsmith-control = [
     "langsmith==0.11.1",
 ]
+notebooks = [
+    "jupyterlab==4.6.3",
+    "jupytext==1.19.5",
+    "langchain-quickjs==0.3.5",
+    "python-dotenv==1.2.3",
+]
+
+[tool.jupytext]
+formats = "ipynb,py:percent"
+notebook_metadata_filter = "kernelspec,jupytext"
+cell_metadata_filter = "tags"
