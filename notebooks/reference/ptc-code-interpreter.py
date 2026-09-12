@@ -59,6 +59,10 @@ from langchain_core.messages import AIMessage
 from langchain_quickjs import CodeInterpreterMiddleware
 
 from deepagents_lab.agent import DEFAULT_MODEL
+from deepagents_lab.benchmarks.sensor_validation import (
+    SensorMeasurements,
+    require_valid_sensor_run,
+)
 
 
 def find_project_root(start: Path | None = None) -> Path:
@@ -215,8 +219,8 @@ score_reading.invoke(
 # (`get_sensor_spec` → `tools.getSensorSpec`), while argument names remain
 # snake-case. `subagents=False` removes the separate `task(...)` bridge.
 #
-# Token counts come from each model-generated `AIMessage.usage_metadata` and are
-# summed across the complete agent run. Elapsed time is wall-clock duration around
+# Token counts come from each model-generated `AIMessage.usage_metadata`, captured
+# through callbacks (including nested model activity). Elapsed time is duration around
 # `agent.ainvoke`, so it includes model and tool execution plus network latency.
 # See the [LangChain message documentation](https://docs.langchain.com/oss/python/langchain/messages#token-usage)
 # for the standardized usage fields.
@@ -225,18 +229,15 @@ score_reading.invoke(
 TOOLS = [get_sensor_spec, score_reading]
 
 
-def create_interpreter() -> CodeInterpreterMiddleware:
+def create_interpreter(ptc_tools: list[Any]) -> CodeInterpreterMiddleware:
     """Create an isolated interpreter with the experiment's fixed boundaries."""
     return CodeInterpreterMiddleware(
-        ptc=TOOLS,
+        ptc=ptc_tools,
         subagents=False,
         mode="thread",
         timeout=5.0,
         max_ptc_calls=20,
     )
-
-
-interpreter = create_interpreter()
 
 
 @dataclass(frozen=True)
@@ -249,27 +250,25 @@ class RunMetrics:
     graph_tool_calls: int
 
 
-def collect_metrics(result: dict[str, Any], elapsed_seconds: float) -> RunMetrics:
-    """Aggregate standardized token usage from every model response."""
+def collect_metrics(
+    result: dict[str, Any], elapsed_seconds: float, measurements: SensorMeasurements,
+) -> RunMetrics:
+    """Use callback usage totals; graph messages count only visible tool calls."""
     ai_messages = [
         message
         for message in result["messages"]
         if isinstance(message, AIMessage)
     ]
-    usage_rows = [
-        message.usage_metadata
-        for message in ai_messages
-        if message.usage_metadata is not None
-    ]
-    if len(usage_rows) != len(ai_messages):
+    totals = measurements.totals()
+    if not totals["usage_complete"]:
         raise RuntimeError("The selected model did not report complete token usage.")
 
     return RunMetrics(
         elapsed_seconds=round(elapsed_seconds, 3),
-        model_calls=len(ai_messages),
-        input_tokens=sum(row["input_tokens"] for row in usage_rows),
-        output_tokens=sum(row["output_tokens"] for row in usage_rows),
-        total_tokens=sum(row["total_tokens"] for row in usage_rows),
+        model_calls=totals["model_calls"],
+        input_tokens=totals["input_tokens"],
+        output_tokens=totals["output_tokens"],
+        total_tokens=totals["total_tokens"],
         graph_tool_calls=sum(
             len(getattr(message, "tool_calls", ()))
             for message in ai_messages
@@ -277,18 +276,28 @@ def collect_metrics(result: dict[str, Any], elapsed_seconds: float) -> RunMetric
     )
 
 
-async def measured_invoke(agent: Any, prompt: str, label: str):
-    """Run one isolated agent thread and return its result plus metrics."""
+async def measured_invoke(model: Any, prompt: str, label: str, *, use_interpreter: bool):
+    """Return result, metrics and fresh run-local evidence for validation."""
+    measurements = SensorMeasurements()
+    # QuickJS 0.3.5 calls BaseTool.arun without inheriting outer callbacks.
+    # Attach the same run-local observer to copies of its allowlisted tools.
+    ptc_tools = [tool.model_copy(update={"callbacks": [measurements]}) for tool in TOOLS]
+    agent = create_deep_agent(
+        model=model,
+        tools=TOOLS,
+        middleware=[create_interpreter(ptc_tools)] if use_interpreter else [],
+    )
     started = perf_counter()
     result = await agent.ainvoke(
         {"messages": [{"role": "user", "content": prompt}]},
         config={
+            "callbacks": [measurements],
             "configurable": {
                 "thread_id": f"{label}-{uuid4()}",
             }
         },
     )
-    return result, collect_metrics(result, perf_counter() - started)
+    return result, collect_metrics(result, perf_counter() - started, measurements), measurements
 
 
 def show_run(label: str, result: dict[str, Any], metrics: RunMetrics) -> None:
@@ -368,17 +377,8 @@ if not os.getenv("OPENAI_API_KEY"):
         "OPENAI_API_KEY is missing. Add it to the repository's ignored .env file."
     )
 
-code_interpreter_agent = create_deep_agent(
-    model=MODEL,
-    tools=TOOLS,
-    middleware=[create_interpreter()],
-)
-baseline_agent = create_deep_agent(model=MODEL, tools=TOOLS)
-ptc_agent = create_deep_agent(
-    model=MODEL,
-    tools=TOOLS,
-    middleware=[interpreter],
-)
+# Each measured_invoke constructs a fresh agent and callback observer before
+# starting its timer, so rerunning a cell cannot reuse another run's evidence.
 
 # %% [markdown]
 # ## LIVE 1 — capability-scoped code interpretation
@@ -400,10 +400,11 @@ Use the eval tool exactly once for all computation. In one JavaScript program:
 After eval returns, report its object verbatim and do no additional arithmetic.
 """.strip()
 
-code_interpreter_result, code_interpreter_metrics = await measured_invoke(
-    code_interpreter_agent,
+code_interpreter_result, code_interpreter_metrics, _ = await measured_invoke(
+    MODEL,
     code_interpreter_prompt,
     "interpreter-reference",
+    use_interpreter=True,
 )
 show_run(
     "CODE INTERPRETER",
@@ -434,15 +435,16 @@ For every reading below:
    with observed from the input and expected plus tolerance_pct from its spec.
 3. Keep only results whose status is "investigate".
 4. Sort by absolute deviation_pct, largest first.
-5. Report only the sorted result array.
+5. Report only valid JSON: the sorted result array, without Markdown fences.
 
 Readings: {json.dumps(READINGS)}
 """.strip()
 
-baseline_result, baseline_metrics = await measured_invoke(
-    baseline_agent,
+baseline_result, baseline_metrics, baseline_evidence = await measured_invoke(
+    MODEL,
     baseline_prompt,
     "ordinary-tools-baseline",
+    use_interpreter=False,
 )
 show_run("ORDINARY TOOL CALLING", baseline_result, baseline_metrics)
 
@@ -468,31 +470,37 @@ Inside one JavaScript program:
 4. Keep only results whose status is "investigate".
 5. Sort by absolute deviation_pct, largest first, and assign the array to
    `investigate`.
-6. Make `investigate;` the final expression. Do not use a top-level return.
+6. Make `JSON.stringify(investigate);` the final expression. Do not use a
+   top-level return.
 
-After eval returns, report its array verbatim without re-running either tool.
+After eval returns, report only its JSON array unchanged, without Markdown
+fences or re-running either tool.
 """.strip()
 
-ptc_result, ptc_metrics = await measured_invoke(
-    ptc_agent,
+ptc_result, ptc_metrics, ptc_evidence = await measured_invoke(
+    MODEL,
     ptc_prompt,
     "ptc-tools-candidate",
+    use_interpreter=True,
 )
 show_run("PROGRAMMATIC TOOL CALLING", ptc_result, ptc_metrics)
 
 # %% [markdown]
 # ## LIVE 2C — compare latency and token usage
 #
-# Both answers must contain the same four investigations before their efficiency
-# numbers are compared. `graph_tool_calls` counts calls represented in graph
+# Both runs must return the exact sorted investigations and successfully complete
+# all sixteen application calls with correct arguments and dependency order.
+# Run-local callbacks capture calls inside QuickJS as well as ordinary tools.
+# The gate also verifies each arm's intended path and complete token usage;
+# invalid runs raise instead of displaying a comparison. `graph_tool_calls`
+# counts calls represented in graph
 # messages: PTC's bridged calls are visible in LangSmith traces but are not added
 # as synthetic graph messages, so the PTC row shows the single outer `eval` call.
 # Both paths still execute the same sixteen application-tool calls.
 
 # %% tags=["live", "benchmark"]
-for sensor in EXPECTED_INVESTIGATIONS:
-    assert sensor in baseline_result["messages"][-1].text
-    assert sensor in ptc_result["messages"][-1].text
+require_valid_sensor_run(baseline_result, baseline_evidence, READINGS, SENSOR_SPECS, "ordinary")
+require_valid_sensor_run(ptc_result, ptc_evidence, READINGS, SENSOR_SPECS, "ptc")
 
 display(comparison_table(baseline_metrics, ptc_metrics))
 

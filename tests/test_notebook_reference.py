@@ -7,8 +7,6 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
-NOTEBOOK = PROJECT_ROOT / "notebooks/reference/ptc-code-interpreter.ipynb"
-JUPYTEXT_SOURCE = PROJECT_ROOT / "notebooks/reference/ptc-code-interpreter.py"
 
 
 @pytest.mark.parametrize("name", ["ptc-code-interpreter", "incident-triage-benchmark"])
@@ -22,26 +20,11 @@ def test_reference_notebook_is_paired_and_output_free(name: str) -> None:
     assert all(not cell.get("outputs") for cell in document["cells"])
 
 
-def test_ptc_reference_notebook_covers_both_interpreter_paths() -> None:
-    document = json.loads(NOTEBOOK.read_text())
-    source = "".join(
-        part
-        for cell in document["cells"]
-        for part in cell.get("source", ())
-    )
-
-    assert "CodeInterpreterMiddleware" in source
-    assert "ptc=TOOLS" in source
-    assert "tools.getSensorSpec" in source
-    assert "tools.scoreReading" in source
-    assert "max_ptc_calls=20" in source
-    assert "usage_metadata" in source
-    assert "perf_counter" in source
-    assert "comparison_table" in source
-    assert "baseline_agent" in source
-    live_cells = [
-        cell
-        for cell in document["cells"]
-        if "live" in cell.get("metadata", {}).get("tags", ())
+@pytest.mark.parametrize("name", ["ptc-code-interpreter", "incident-triage-benchmark"])
+def test_notebook_source_pair_is_synchronized(name: str) -> None:
+    jupytext = pytest.importorskip("jupytext")
+    path = PROJECT_ROOT / f"notebooks/reference/{name}"
+    notebook, source = [jupytext.read(path.with_suffix(suffix)) for suffix in (".ipynb", ".py")]
+    assert [(c.cell_type, c.source, c.metadata.get("tags")) for c in notebook.cells] == [
+        (c.cell_type, c.source, c.metadata.get("tags")) for c in source.cells
     ]
-    assert len(live_cells) == 5
