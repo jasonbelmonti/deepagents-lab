@@ -1,7 +1,10 @@
 """Identical batch reads and per-trial work bounds for every arm."""
 import asyncio
 import json
+from contextvars import copy_context
+from copy import deepcopy
 from datetime import date
+from functools import partial
 from threading import Lock
 from time import perf_counter
 
@@ -19,6 +22,7 @@ class GraphAPI:
 
     def execute(self, name, ids, **options):
         started = perf_counter()
+        options = deepcopy(options)
         row = {"name": name, "ids": list(ids), "options": options, "ok": False, "response_bytes": 0}
         with self._lock:
             self.calls.append(row)
@@ -54,8 +58,21 @@ class GraphAPI:
             row["elapsed_seconds"] = perf_counter() - started
 
     async def read(self, name, ids, **options):
-        async with self._slots:
-            return await asyncio.to_thread(self.execute, name, ids, **options)
+        await self._slots.acquire()
+        try:
+            work = asyncio.get_running_loop().run_in_executor(
+                None, partial(copy_context().run, self.execute, name, ids, **options))
+        except BaseException:
+            self._slots.release()
+            raise
+        # The worker owns the slot: cancelling its caller cannot stop a thread.
+        work.add_done_callback(self._read_finished)
+        return await asyncio.shield(work)
+
+    def _read_finished(self, work):
+        self._slots.release()
+        if not work.cancelled():
+            work.exception()  # Observe errors even when the caller has left.
 
     def tools(self):
         # QuickJS renders only the first description line in its PTC reference.

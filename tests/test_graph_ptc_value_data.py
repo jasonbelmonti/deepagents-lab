@@ -101,6 +101,136 @@ def test_read_evidence_rejects_lucky_empty_answers_and_allows_pruning():
     assert sufficient_reads(api, case, expected_answer(data, case))  # Lower-ranked people pruned.
 
 
+def test_profile_field_reuse_cannot_rewrite_past_read_evidence():
+    data, case = known_graph(), Scenario(kind="lookup")
+    api = GraphAPI(data)
+    fields = ["name"]
+    assert api.execute("profiles", ["r"], fields=fields) == [{"person_id": "r", "name": "r"}]
+    assert not sufficient_reads(api, case, expected_answer(data, case))
+    fields.append("topic")
+    api.execute("profiles", ["x"], fields=fields)
+    assert not sufficient_reads(api, case, expected_answer(data, case))
+    api.execute("profiles", ["r"], fields=fields)
+    fields.remove("topic")
+    assert sufficient_reads(api, case, expected_answer(data, case))
+    assert api.calls[0]["options"]["fields"] == ["name"]
+    assert api.calls[-1]["options"]["fields"] == ["name", "topic"]
+
+
+def contact_graph(last_contact):
+    data = known_graph()
+    edges = tuple(e for e in data.edges if (e["source"], e["target"]) in {("r", "a"), ("a", "x")})
+    return replace(data, edges=edges, contacts={} if last_contact is None else {"x": last_contact})
+
+
+@pytest.mark.parametrize("query_since", ["2026-07-01", "2026-08-01", "2026-08-10"])
+def test_returned_recent_contact_proves_exclusion(query_since):
+    data, case = contact_graph("2026-08-15"), Scenario(depth=2)
+    api = GraphAPI(data)
+    api.execute("neighbors", ["r", "a"], kind="collaborated", since=case.edge_since)
+    assert api.execute("contacts", ["x"], since=query_since) == [
+        {"person_id": "x", "last_contact": "2026-08-15"}]
+    assert expected_answer(data, case) == []
+    assert sufficient_reads(api, case, [])  # No topic read or redundant contact query needed.
+
+
+@pytest.mark.parametrize("last_contact", ["2026-08-05", "2026-07-15", None])
+def test_later_empty_contact_query_cannot_establish_absence(last_contact):
+    data, case = contact_graph(last_contact), Scenario(depth=2)
+    api = GraphAPI(data)
+    api.execute("neighbors", ["r", "a"], kind="collaborated", since=case.edge_since)
+    api.execute("profiles", ["x"], fields=["topic"])
+    assert api.execute("contacts", ["x"], since="2026-08-10") == []
+    assert not sufficient_reads(api, case, expected_answer(data, case))
+    api.execute("contacts", ["x"], since=case.contact_since)
+    assert sufficient_reads(api, case, expected_answer(data, case))
+
+
+def test_returned_old_contact_does_not_prove_exclusion():
+    data, case = contact_graph("2026-07-15"), Scenario(depth=2)
+    api = GraphAPI(data)
+    api.execute("neighbors", ["r", "a"], kind="collaborated", since=case.edge_since)
+    assert api.execute("contacts", ["x"], since="2026-07-01") == [
+        {"person_id": "x", "last_contact": "2026-07-15"}]
+    assert expected_answer(data, case)
+    assert not sufficient_reads(api, case, expected_answer(data, case))  # Topic still unknown.
+    api.execute("profiles", ["x"], fields=["topic"])
+    assert sufficient_reads(api, case, expected_answer(data, case))
+
+
+def test_complete_root_read_can_prove_connector_minimum_impossible():
+    data, case = known_graph(), Scenario(min_connectors=3)
+    api = GraphAPI(data)
+    assert expected_answer(data, case) == []
+    assert not sufficient_reads(api, case, [])
+    api.execute("neighbors", ["r"], kind="follows", since=case.edge_since)
+    api.execute("neighbors", ["r"], kind="collaborated", since="2026-08-01")
+    assert not sufficient_reads(api, case, [])  # Neither query covers the requested edges.
+    api.execute("neighbors", ["r"], kind="collaborated", since=case.edge_since)
+    assert sufficient_reads(api, case, [])  # Only two possible first-hop connectors.
+    lower_minimum = replace(case, min_connectors=2)
+    assert expected_answer(data, lower_minimum)
+    assert not sufficient_reads(api, lower_minimum, expected_answer(data, lower_minimum))
+
+
+@pytest.mark.parametrize("first_fails", [False, True])
+def test_cancelled_read_keeps_capacity_until_worker_finishes(monkeypatch, first_fails):
+    import asyncio
+    from contextvars import ContextVar
+    from threading import Event, Lock
+
+    api = GraphAPI(known_graph(), concurrency=1)
+    original, lock = api.execute, Lock()
+    release_first, first_started, second_started = Event(), Event(), Event()
+    context = ContextVar("graph_read_test_context")
+    active = peak = 0
+
+    def gated(name, ids, **options):
+        nonlocal active, peak
+        assert context.get() == "caller"
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            if ids != ["x"]:
+                first_started.set()
+                assert release_first.wait(3), "First worker was not released"
+            else:
+                second_started.set()
+            return original(name, ids, **options)
+        finally:
+            with lock:
+                active -= 1
+
+    monkeypatch.setattr(api, "execute", gated)
+
+    async def run():
+        context.set("caller")
+        first = asyncio.create_task(api.read("profiles", ["missing" if first_fails else "r"], fields=["topic"]))
+        second = None
+        try:
+            async with asyncio.timeout(2):
+                while not first_started.is_set():
+                    await asyncio.sleep(0.001)
+            first.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await first
+            second = asyncio.create_task(api.read("profiles", ["x"], fields=["topic"]))
+            await asyncio.sleep(0.05)
+            assert not second_started.is_set()
+            release_first.set()
+            assert await asyncio.wait_for(second, 2) == [{"person_id": "x", "topic": "graphs"}]
+        finally:
+            release_first.set()
+            await asyncio.gather(*(task for task in (first, second) if task is not None), return_exceptions=True)
+
+    asyncio.run(run())
+    assert peak == 1
+    assert [row["ok"] for row in api.calls] == [not first_fails, True]
+    if first_fails:
+        assert api.calls[0]["error_type"] == "ValueError"
+
+
 def test_concurrency_limit_applies_to_parallel_api_reads(monkeypatch):
     import asyncio
     import time
