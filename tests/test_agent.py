@@ -24,4 +24,4 @@ def test_create_agent_owns_deepagents_construction(
 
 
 def test_default_model_remains_stable() -> None:
-    assert agent.DEFAULT_MODEL == "openai:gpt-5.4"
+    assert agent.DEFAULT_MODEL == "openai:gpt-5.6-luna"

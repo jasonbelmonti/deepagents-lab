@@ -13,6 +13,7 @@ dist/
 
 # Test and analysis caches
 .pytest_cache/
+.ipynb_checkpoints/
 .coverage
 .coverage.*
 htmlcov/
