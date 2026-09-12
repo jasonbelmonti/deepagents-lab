@@ -508,6 +508,10 @@ display(comparison_table(baseline_metrics, ptc_metrics))
 # path runs first, report median and tail latency, retain the exact model/config,
 # and compare LangSmith traces. Do not claim a general PTC speedup from this one
 # synthetic workload.
+#
+# The [four-stage incident-triage benchmark](incident-triage-benchmark.ipynb)
+# implements five alternating pairs, exact result/coverage checks, and persistent
+# per-trial latency and token reports for a deeper workload.
 
 # %% [markdown]
 # ## Suggested variations

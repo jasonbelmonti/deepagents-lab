@@ -153,14 +153,27 @@ uv run --frozen --group notebooks jupyter lab \
 The reference demonstrates two distinct interpreter paths:
 
 - capability-scoped JavaScript execution through the QuickJS-backed `eval` tool;
-- programmatic tool calling (PTC), where that JavaScript calls one explicitly
-  allowlisted, read-only Python tool through the `tools.*` namespace.
+- programmatic tool calling (PTC), where that JavaScript calls explicitly
+  allowlisted, read-only Python tools through the `tools.*` namespace.
 
 It also runs the same two-stage workload through ordinary tool calling and PTC,
 then compares end-to-end latency, model-call count, and provider-reported input,
 output, and total token usage. The single comparison is explanatory rather than
 decision-grade benchmark evidence; the notebook documents the repeated-trial
 controls needed for that claim.
+
+For the repeated four-stage incident-triage benchmark (20 records, five
+alternating pairs, latency p50/p95 and token usage), open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/reference/incident-triage-benchmark.ipynb
+```
+
+It makes ten paid agent runs and saves every trial under ignored
+`results/incident-triage/`. Comparisons require correct answers and complete
+record coverage from both arms; failed runs stay visible. With five pairs,
+reported p95 is the observed maximum and remains exploratory.
 
 Run the cells marked **LIVE** to make OpenAI API calls using the same
 `OPENAI_API_KEY` and `DEEPAGENTS_LAB_MODEL` values as the rest of the lab. The

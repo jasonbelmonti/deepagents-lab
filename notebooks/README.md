@@ -20,3 +20,17 @@ Launch a reference from the repository root:
 uv run --frozen --group notebooks jupyter lab \
   notebooks/reference/ptc-code-interpreter.ipynb
 ```
+
+For repeated latency/token measurements over a deeper four-stage workload:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/reference/incident-triage-benchmark.ipynb
+```
+
+The incident-triage benchmark runs five alternating pairs over 20 records. It
+records every trial, validates complete work and exact answers, and displays
+latency p50/p95 and token comparisons. Five samples make p95 exploratory.
+Reports are saved under ignored `results/incident-triage/` directories. The
+fixture, measurement, runner and report helpers live under
+`src/deepagents_lab/benchmarks/` so the notebook stays focused on the experiment.
