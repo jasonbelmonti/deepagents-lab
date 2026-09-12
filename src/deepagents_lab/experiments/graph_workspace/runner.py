@@ -124,14 +124,13 @@ async def run_probe(
             if output.name != "eval" or output.status == "error" or envelope.tag != "result":
                 raise ValueError("Unsuccessful or unexpected tool execution.")
             parsed.append(json.loads(envelope.text or "null"))
-        usage = measurements.totals()
         final_ok = not live or json.loads(result["messages"][-1].text) == expected
         row["validation"] = {
             "interpreter_answer": bool(parsed) and parsed[-1] == expected,
             "final_answer": final_ok,
             "path": bool(names) and set(names) == {"eval"},
             "work": bool(boundary.calls) and all(call["ok"] for call in boundary.calls),
-            "usage": not live or usage["usage_complete"],
+            "usage": not live or measurements.totals()["usage_complete"],
             "revision": store.revision == revision,
         }
         row["valid"] = all(row["validation"].values())
@@ -139,12 +138,14 @@ async def run_probe(
         row["snapshot_bytes"] = len(state.get("_quickjs_snapshot_payload") or b"")
         if mode == "thread" and not row["snapshot_bytes"]:
             raise ValueError("Thread snapshot was unavailable; persistence measurement invalid.")
-        row["model_calls"] = usage["model_calls"] if live else None
-        row["input_tokens"] = usage["input_tokens"] if live else None
-        row["output_tokens"] = usage["output_tokens"] if live else None
-        row["total_tokens"] = usage["total_tokens"] if live else None
     except Exception as error:
         row.update(valid=False, error_type=type(error).__name__, error=str(error), elapsed_ms=(perf_counter() - started) * 1000)
+    # Failed work still costs tokens. Keep observed calls even when a missing
+    # response's usage means complete aggregate totals must remain unknown.
+    usage = measurements.totals()
+    for name in ("model_calls", "usage_complete", "input_tokens", "output_tokens", "total_tokens"):
+        row[name] = usage[name] if live else None
+    row["model_call_details"] = list(measurements.calls.values()) if live else []
     row["tool_calls"] = boundary.calls
     row["response_bytes"] = sum(call["response_bytes"] for call in boundary.calls)
     row["backend_ms"] = sum(call["backend_ms"] for call in boundary.calls)

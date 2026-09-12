@@ -239,6 +239,10 @@ print(limited["error_type"], limited["tool_calls"])
 # are copied automatically into this worktree. Existing LangSmith settings apply.
 # The live run uses the current, updated graph. It records actual model calls and
 # input/output/total tokens; missing usage invalidates the attempt.
+# Accounting is retained even when the program or final answer fails. Inspect
+# model_call_details for each observed call's usage and completion/error status.
+# If usage_complete is false, aggregate token totals remain null; known per-call
+# usage is still retained and must not be mistaken for the complete run cost.
 #
 # These are single trials, not a statistically controlled model comparison.
 # Agent-generated code may fail the workload; failures remain visible.
