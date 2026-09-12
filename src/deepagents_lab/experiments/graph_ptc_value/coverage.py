@@ -4,7 +4,7 @@ from .oracle import structural_candidates
 
 def sufficient_reads(api, case, expected):
     data = api.data
-    calls = [row for row in api.calls if row["ok"]]
+    calls = [row for row in api.calls if row["ok"] and row["delivered"]]
     profiles = {i for row in calls if row["name"] == "profiles" and "topic" in row["options"]["fields"] for i in row["ids"]}
     if case.kind == "lookup":
         return data.root in profiles

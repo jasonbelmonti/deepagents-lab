@@ -21,9 +21,16 @@ class GraphAPI:
         self._slots = asyncio.Semaphore(concurrency)
 
     def execute(self, name, ids, **options):
+        result, row = self._execute(name, ids, **options)
+        row["delivered"] = True
+        return result
+
+    def _execute(self, name, ids, **options):
+        """Record backend work separately from delivery to a read's caller."""
         started = perf_counter()
         options = deepcopy(options)
-        row = {"name": name, "ids": list(ids), "options": options, "ok": False, "response_bytes": 0}
+        row = {"name": name, "ids": list(ids), "options": options,
+               "ok": False, "delivered": False, "response_bytes": 0}
         with self._lock:
             self.calls.append(row)
             over_budget = len(self.calls) > self.max_calls
@@ -50,7 +57,7 @@ class GraphAPI:
             else:
                 raise ValueError("Unknown graph API operation.")
             row.update(ok=True, records=len(result), response_bytes=len(json.dumps(result, separators=(",", ":")).encode()))
-            return result
+            return result, row
         except Exception as error:
             row["error_type"] = type(error).__name__
             raise
@@ -61,13 +68,16 @@ class GraphAPI:
         await self._slots.acquire()
         try:
             work = asyncio.get_running_loop().run_in_executor(
-                None, partial(copy_context().run, self.execute, name, ids, **options))
+                None, partial(copy_context().run, self._execute, name, ids, **options))
         except BaseException:
             self._slots.release()
             raise
         # The worker owns the slot: cancelling its caller cannot stop a thread.
         work.add_done_callback(self._read_finished)
-        return await asyncio.shield(work)
+        result, row = await asyncio.shield(work)
+        # No await between this mark and return: cancelled reads never mark it.
+        row["delivered"] = True
+        return result
 
     def _read_finished(self, work):
         self._slots.release()

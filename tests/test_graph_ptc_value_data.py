@@ -63,6 +63,7 @@ def test_api_filters_projection_copies_and_failures_are_observable():
     with pytest.raises(ValueError, match="budget"):
         api.execute("profiles", ["x"], fields=["topic"])
     assert [c["ok"] for c in api.calls] == [True, True, True, False, False, False]
+    assert [c["delivered"] for c in api.calls] == [True, True, True, False, False, False]
     assert all("elapsed_seconds" in row for row in api.calls)
 
 
@@ -180,7 +181,7 @@ def test_cancelled_read_keeps_capacity_until_worker_finishes(monkeypatch, first_
     from threading import Event, Lock
 
     api = GraphAPI(known_graph(), concurrency=1)
-    original, lock = api.execute, Lock()
+    original, lock = api._execute, Lock()
     release_first, first_started, second_started = Event(), Event(), Event()
     context = ContextVar("graph_read_test_context")
     active = peak = 0
@@ -202,7 +203,7 @@ def test_cancelled_read_keeps_capacity_until_worker_finishes(monkeypatch, first_
             with lock:
                 active -= 1
 
-    monkeypatch.setattr(api, "execute", gated)
+    monkeypatch.setattr(api, "_execute", gated)
 
     async def run():
         context.set("caller")
@@ -227,8 +228,67 @@ def test_cancelled_read_keeps_capacity_until_worker_finishes(monkeypatch, first_
     asyncio.run(run())
     assert peak == 1
     assert [row["ok"] for row in api.calls] == [not first_fails, True]
+    assert [row["delivered"] for row in api.calls] == [False, True]
+    assert not sufficient_reads(api, Scenario(kind="lookup"), expected_answer(api.data, Scenario(kind="lookup")))
     if first_fails:
         assert api.calls[0]["error_type"] == "ValueError"
+
+
+@pytest.mark.parametrize("proof", ["lookup", "connector-bound", "contact-exclusion", "contact-absence"])
+def test_cancelled_result_is_accounted_but_not_read_evidence(proof):
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    data = contact_graph("2026-08-15" if proof == "contact-exclusion" else None)
+    case = Scenario(kind="lookup") if proof == "lookup" else Scenario(depth=2)
+    api = GraphAPI(data)
+    if proof == "lookup":
+        name, ids, options = "profiles", ["r"], {"fields": ["topic"]}
+    elif proof == "connector-bound":
+        case = replace(case, min_connectors=2)
+        name, ids, options = "neighbors", ["r"], {"kind": "collaborated", "since": case.edge_since}
+    else:
+        api.execute("neighbors", ["r", "a"], kind="collaborated", since=case.edge_since)
+        if proof == "contact-absence":
+            api.execute("profiles", ["x"], fields=["topic"])
+        name, ids, options = "contacts", ["x"], {"since": case.contact_since}
+    expected = expected_answer(data, case)
+    assert not sufficient_reads(api, case, expected)
+    prior_calls = len(api.calls)
+
+    async def run():
+        loop = asyncio.get_running_loop()
+        loop.set_default_executor(ThreadPoolExecutor(max_workers=1))
+        release = Event()
+        occupied = loop.run_in_executor(None, release.wait)
+        caller = asyncio.create_task(api.read(name, ids, **options))
+        try:
+            await asyncio.sleep(0)  # Queue the real read behind the occupied worker.
+            assert len(api.calls) == prior_calls
+            caller.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+        finally:
+            release.set()
+            await occupied
+            await asyncio.gather(caller, return_exceptions=True)
+        await loop.run_in_executor(None, lambda: None)  # Drain queued work.
+        assert caller.cancelled()
+        assert len(api.calls) == prior_calls + 1
+        cancelled = api.calls[-1]
+        assert cancelled["ok"] and cancelled["response_bytes"] > 0
+        assert "records" in cancelled and "elapsed_seconds" in cancelled
+        assert not sufficient_reads(api, case, expected)
+        assert cancelled["delivered"] is False
+
+        result = await api.read(name, ids, **options)
+        assert result == GraphAPI(data).execute(name, ids, **options)
+        assert sufficient_reads(api, case, expected)
+        assert api.calls[-1]["delivered"] is True
+        assert cancelled["delivered"] is False  # A retry cannot rewrite the old receipt.
+
+    asyncio.run(run())
 
 
 def test_concurrency_limit_applies_to_parallel_api_reads(monkeypatch):
@@ -237,7 +297,7 @@ def test_concurrency_limit_applies_to_parallel_api_reads(monkeypatch):
     from threading import Lock
 
     api = GraphAPI(known_graph(), concurrency=2)
-    original, lock = api.execute, Lock()
+    original, lock = api._execute, Lock()
     active = peak = 0
 
     def slow(*args, **kwargs):
@@ -252,10 +312,11 @@ def test_concurrency_limit_applies_to_parallel_api_reads(monkeypatch):
             with lock:
                 active -= 1
 
-    monkeypatch.setattr(api, "execute", slow)
+    monkeypatch.setattr(api, "_execute", slow)
 
     async def run():
         return await asyncio.gather(*(api.read("profiles", ["x"], fields=["topic"]) for _ in range(8)))
 
     assert len(asyncio.run(run())) == 8
     assert peak == 2 and len(api.calls) == 8
+    assert all(row["delivered"] for row in api.calls)
