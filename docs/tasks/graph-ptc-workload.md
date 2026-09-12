@@ -5,7 +5,7 @@ task_id: graph-ptc-workload
 artifact_version: "3.0"
 revision: "1"
 created_at: "2026-09-12T21:10:09Z"
-updated_at: "2026-09-12T21:10:09Z"
+updated_at: "2026-09-12T21:21:00Z"
 validation_profile: skills/task-definition/profiles/task-definition.yaml
 ---
 
@@ -89,7 +89,7 @@ graph-ptc-value-experiment.md; its superseded criteria do not govern this PR.
 
 | Execution status | Current proving slice | Evidence admitted | Next action | Blockers / stop condition |
 | --- | --- | --- | --- | --- |
-| not-started | Isolate and prove TD-SC-1 through TD-SC-3 | None admitted. | Extract and verify the seven workload files in the clean PR 1 worktree. | Stop after PR 1; no paid calls or automatic PR 2 execution. |
+| review-ready | Isolated TD-SC-1 through TD-SC-3 | TD-SC-1/TD-SC-2: 6 focused tests and 3 real tool-wrapper smoke checks pass. TD-SC-3: 78 tests pass in the isolated frozen environment; 217 packages compatible; 7 extracted files match the prototype; source/notebook/pilot hashes unchanged; bounded diff passes inspection. | Review PR 1 against this contract; local proof receipt is results/graph-ptc-workload/verification.md in the PR 1 worktree. | Not independently approved. Stop after PR 1; no paid calls or automatic PR 2 execution. |
 
 ## Follow-up / Non-blocking Work
 
