@@ -175,11 +175,29 @@ It makes ten paid agent runs and saves every trial under ignored
 record coverage from both arms; failed runs stay visible. With five pairs,
 reported p95 is the observed maximum and remains exploratory.
 
-Run the cells marked **LIVE** to make OpenAI API calls using the same
+In these two references, run the cells marked **LIVE** to make OpenAI API calls
+using the same
 `OPENAI_API_KEY` and `DEEPAGENTS_LAB_MODEL` values as the rest of the lab. The
 notebook loads the repository's ignored `.env` file, so no manual export is
 required. Those calls incur normal provider usage and optionally emit LangSmith
 traces under the existing `.env` configuration.
+
+For a separate, **offline-first graph experiment**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/graph-workspace.ipynb
+```
+
+Run All works without credentials. It compares full graph loading, bounded
+neighborhood loading, and backend-side path queries through real QuickJS. It
+also demonstrates interpreter snapshot sizes, SQLite-backed investigation
+records, explicit graph updates, stale-revision rejection, and work budgets.
+Its scripted-model timings are local infrastructure measurements, not live
+model performance or production scaling evidence. An optional `RUN_LIVE=True`
+section makes three paid invocations and records real token usage; only that
+section loads `.env`. All databases and measurements stay under ignored
+`results/graph-workspace/` directories. No new dependency or service is required.
 
 The `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
 Keep both files synchronized and output-free before committing:
