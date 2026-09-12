@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, ToolMessage
 
 from deepagents_lab.benchmarks.sensor_validation import require_valid_sensor_run
 
@@ -47,7 +47,10 @@ def notebook(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     return scope
 
 
-def run_sensor(notebook: dict[str, Any], arm: str, *, skip_tools: bool = False, answer: Any = EXPECTED):
+def run_sensor(
+    notebook: dict[str, Any], arm: str, *, skip_tools: bool = False,
+    answer: Any = EXPECTED, same_turn: bool = False, eval_error: bool = False,
+):
     calls = []
     if not skip_tools and arm == "ordinary":
         calls = [[{"name": "get_sensor_spec", "args": {"sensor": r["sensor"]}} for r in notebook["READINGS"]]]
@@ -55,6 +58,8 @@ def run_sensor(notebook: dict[str, Any], arm: str, *, skip_tools: bool = False, 
             **r, "expected": notebook["SENSOR_SPECS"][r["sensor"]]["expected"],
             "tolerance_pct": notebook["SENSOR_SPECS"][r["sensor"]]["tolerance_pct"],
         }} for r in notebook["READINGS"]])
+        if same_turn:
+            calls = [[call for batch in calls for call in batch]]
     elif not skip_tools:
         code = f"""
 const readings = {json.dumps(notebook['READINGS'])};
@@ -65,6 +70,8 @@ const scores = await Promise.all(readings.map((r, i) => tools.scoreReading({{
 JSON.stringify(scores.filter(r => r.status === 'investigate')
     .sort((a, b) => Math.abs(b.deviation_pct) - Math.abs(a.deviation_pct)));
 """
+        if eval_error:
+            code += "\nJSON.stringify(investigations);"  # Undefined after all required work.
         calls = [[{"name": "eval", "args": {"code": code}}]]
     responses = [AIMessage(content="", tool_calls=[
         {**call, "id": f"{stage}-{i}", "type": "tool_call"} for i, call in enumerate(batch)
@@ -98,6 +105,29 @@ def test_real_tool_paths_pass_the_actual_comparison_cell(notebook: dict[str, Any
 def test_actual_comparison_cell_rejects_skipped_ptc_work(notebook: dict[str, Any], answer: Any) -> None:
     notebook["baseline_result"], notebook["baseline_metrics"], notebook["baseline_evidence"] = run_sensor(notebook, "ordinary")
     notebook["ptc_result"], notebook["ptc_metrics"], notebook["ptc_evidence"] = run_sensor(notebook, "ptc", skip_tools=True, answer=answer)
+    displayed = []
+    notebook["display"] = displayed.append
+    with pytest.raises(ValueError, match="no efficiency comparison"):
+        exec(notebook["comparison_cell"], notebook)
+    assert not displayed
+
+
+@pytest.mark.parametrize("defect", ["same_turn", "eval_error"])
+def test_actual_comparison_cell_rejects_invalid_execution(notebook: dict[str, Any], defect: str) -> None:
+    notebook["baseline_result"], notebook["baseline_metrics"], notebook["baseline_evidence"] = run_sensor(
+        notebook, "ordinary", same_turn=defect == "same_turn",
+    )
+    notebook["ptc_result"], notebook["ptc_metrics"], notebook["ptc_evidence"] = run_sensor(
+        notebook, "ptc", eval_error=defect == "eval_error",
+    )
+    if defect == "same_turn":
+        assert notebook["baseline_metrics"].model_calls == 2
+        assert len(notebook["baseline_evidence"].tool_calls) == 16
+    else:
+        output = next(m for m in notebook["ptc_result"]["messages"] if isinstance(m, ToolMessage))
+        assert output.status == "success" and '<error type="ReferenceError">' in output.text
+        assert len(notebook["ptc_evidence"].tool_calls) == 17
+        assert not next(c for c in notebook["ptc_evidence"].tool_calls.values() if c["name"] == "eval")["ok"]
     displayed = []
     notebook["display"] = displayed.append
     with pytest.raises(ValueError, match="no efficiency comparison"):

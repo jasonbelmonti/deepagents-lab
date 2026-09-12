@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 from collections import Counter
 from typing import Any
+from xml.etree import ElementTree
 
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.outputs import ChatGeneration, LLMResult
 
 from deepagents_lab.benchmarks.incident_metrics import ModelMeasurements
 
@@ -18,6 +20,29 @@ class SensorMeasurements(ModelMeasurements):
         super().__init__()
         self.tool_calls: dict[str, dict[str, Any]] = {}
         self._sequence = 0
+
+    def on_chat_model_start(self, serialized: Any, messages: Any, *, run_id: Any, **kwargs: Any) -> None:
+        super().on_chat_model_start(serialized, messages, run_id=run_id, **kwargs)
+        available_specs = {}
+        for message in messages[0]:
+            if isinstance(message, ToolMessage) and message.name == "get_sensor_spec" and message.status == "success":
+                try:
+                    spec = json.loads(message.text)
+                    available_specs[spec["sensor"]] = spec
+                except (KeyError, TypeError, ValueError):
+                    continue
+        with self._lock:
+            self.calls[str(run_id)]["available_specs"] = available_specs
+
+    def on_llm_end(self, response: LLMResult, *, run_id: Any, **kwargs: Any) -> None:
+        super().on_llm_end(response, run_id=run_id, **kwargs)
+        generation = response.generations[0][0] if response.generations and response.generations[0] else None
+        if isinstance(generation, ChatGeneration) and isinstance(generation.message, AIMessage):
+            with self._lock:
+                self.calls[str(run_id)]["score_sensors"] = [
+                    call["args"].get("sensor") for call in generation.message.tool_calls
+                    if call["name"] == "score_reading"
+                ]
 
     def on_tool_start(
         self, serialized: dict[str, Any], input_str: str, *, run_id: Any,
@@ -33,10 +58,18 @@ class SensorMeasurements(ModelMeasurements):
     def on_tool_end(self, output: Any, *, run_id: Any, **kwargs: Any) -> None:
         with self._lock:
             self._sequence += 1
-            self.tool_calls[str(run_id)].update(
-                ended=self._sequence,
-                ok=not (isinstance(output, ToolMessage) and output.status == "error"),
-            )
+            call = self.tool_calls[str(run_id)]
+            ok = not (isinstance(output, ToolMessage) and output.status == "error")
+            if call["name"] == "eval":
+                # QuickJS 0.3.5 wraps interpreter errors in success-status messages.
+                # Its optional stdout is unescaped; only parse the final envelope.
+                text = output.text if isinstance(output, ToolMessage) else str(output)
+                envelope = text.rsplit("</stdout>\n", 1)[-1]
+                try:
+                    ok = ok and ElementTree.fromstring(envelope).tag == "result"
+                except ElementTree.ParseError:
+                    ok = False
+            call.update(ended=self._sequence, ok=ok)
 
     # Errors leave ok=False and ended=None, so failed/retried work cannot pass.
 
@@ -86,6 +119,16 @@ def require_valid_sensor_run(
                 **reading, "expected": spec["expected"], "tolerance_pct": spec["tolerance_pct"],
             }
             arguments_correct = arguments_correct and lookup["ended"] < score["started"]
+
+    if arm == "ordinary":
+        # Tool scheduling order is not proof the model received the lookup result.
+        for call in measurements.calls.values():
+            sensors = call.get("score_sensors", [])
+            arguments_correct = arguments_correct and len(sensors) == call.get("tool_names", []).count("score_reading")
+            arguments_correct = arguments_correct and all(
+                sensor in specs and call.get("available_specs", {}).get(sensor) == {"sensor": sensor, **specs[sensor]}
+                for sensor in sensors
+            )
 
     checks = {
         "answer": answer_correct, "coverage": coverage_correct,
