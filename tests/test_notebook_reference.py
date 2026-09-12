@@ -27,12 +27,17 @@ def test_ptc_reference_notebook_covers_both_interpreter_paths() -> None:
     )
 
     assert "CodeInterpreterMiddleware" in source
-    assert "ptc=[score_reading]" in source
+    assert "ptc=TOOLS" in source
+    assert "tools.getSensorSpec" in source
     assert "tools.scoreReading" in source
-    assert "max_ptc_calls=12" in source
+    assert "max_ptc_calls=20" in source
+    assert "usage_metadata" in source
+    assert "perf_counter" in source
+    assert "comparison_table" in source
+    assert "baseline_agent" in source
     live_cells = [
         cell
         for cell in document["cells"]
         if "live" in cell.get("metadata", {}).get("tags", ())
     ]
-    assert len(live_cells) == 3
+    assert len(live_cells) == 5

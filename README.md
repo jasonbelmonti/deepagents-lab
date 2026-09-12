@@ -156,6 +156,12 @@ The reference demonstrates two distinct interpreter paths:
 - programmatic tool calling (PTC), where that JavaScript calls one explicitly
   allowlisted, read-only Python tool through the `tools.*` namespace.
 
+It also runs the same two-stage workload through ordinary tool calling and PTC,
+then compares end-to-end latency, model-call count, and provider-reported input,
+output, and total token usage. The single comparison is explanatory rather than
+decision-grade benchmark evidence; the notebook documents the repeated-trial
+controls needed for that claim.
+
 Run the cells marked **LIVE** to make OpenAI API calls using the same
 `OPENAI_API_KEY` and `DEEPAGENTS_LAB_MODEL` values as the rest of the lab. The
 notebook loads the repository's ignored `.env` file, so no manual export is
