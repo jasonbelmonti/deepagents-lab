@@ -1,7 +1,8 @@
 """One real DeepAgents invocation; validation and accounting stay separate."""
 import asyncio
 import json
-from contextlib import nullcontext
+from contextlib import asynccontextmanager, nullcontext
+from functools import partial
 from time import perf_counter
 from uuid import uuid4
 from xml.etree import ElementTree
@@ -9,6 +10,7 @@ from xml.etree import ElementTree
 from deepagents import create_deep_agent
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import ToolMessage
+from langchain_core.runnables import RunnableLambda
 from langsmith import tracing_context
 
 from .config import ARMS, Config, Scenario
@@ -27,7 +29,9 @@ def model_settings(config):
     return settings
 
 
-def build_agent(model, api, arm, config):
+@asynccontextmanager
+async def agent_session(model, api, arm, config, thread_id):
+    """Own turn-scoped interpreter cleanup, including exceptional agent exits."""
     from langchain_quickjs import CodeInterpreterMiddleware
 
     if arm not in ARMS:
@@ -38,7 +42,14 @@ def build_agent(model, api, arm, config):
         timeout=config.interpreter_timeout, max_ptc_calls=config.max_tool_calls,
         memory_limit=64 * 1024 * 1024, max_result_chars=32000,
     )]
-    return create_deep_agent(model=model, tools=[] if arm == "ptc" else tools, middleware=middleware)
+    try:
+        yield create_deep_agent(model=model, tools=[] if arm == "ptc" else tools, middleware=middleware)
+    finally:
+        for interpreter in middleware:
+            # Failed runs skip the normal after-agent hook. Invoke that public
+            # hook with the same Runnable config; no private registry access.
+            cleanup = RunnableLambda(partial(interpreter.aafter_agent, runtime=None))
+            await cleanup.ainvoke({}, config={"configurable": {"thread_id": thread_id}})
 
 
 def exact_json(text, expected):
@@ -82,17 +93,17 @@ async def run_trial(config: Config, case: Scenario, seed: int, arm: str, *, mode
     try:
         if model is None:
             model = init_chat_model(config.model, **model_settings(config))
-        agent = build_agent(model, api, arm, config)
-        started = perf_counter()
         with nullcontext() if live else tracing_context(enabled=False):
-            async with asyncio.timeout(config.run_timeout):
-                result = await agent.ainvoke(
-                    {"messages": [{"role": "user", "content": prompt_for(case, api.data.root, arm, config)}]},
-                    config={"callbacks": [measurements], "run_id": run_id,
-                            "run_name": f"graph-ptc-value-{arm}", "tags": ["graph-ptc-value", arm],
-                            "metadata": {"case": case.name, "seed": seed},
-                            "configurable": {"thread_id": str(run_id)}, "recursion_limit": config.recursion_limit},
-                )
+            async with agent_session(model, api, arm, config, str(run_id)) as agent:
+                started = perf_counter()
+                async with asyncio.timeout(config.run_timeout):
+                    result = await agent.ainvoke(
+                        {"messages": [{"role": "user", "content": prompt_for(case, api.data.root, arm, config)}]},
+                        config={"callbacks": [measurements], "run_id": run_id,
+                                "run_name": f"graph-ptc-value-{arm}", "tags": ["graph-ptc-value", arm],
+                                "metadata": {"case": case.name, "seed": seed},
+                                "configurable": {"thread_id": str(run_id)}, "recursion_limit": config.recursion_limit},
+                    )
         row["elapsed_seconds"] = perf_counter() - started
         row["validation"] = validate(result, expected, api, measurements, arm, case)
         row["correct"] = all(row["validation"].values())

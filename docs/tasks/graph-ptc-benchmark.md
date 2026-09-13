@@ -3,9 +3,9 @@ type: TaskDefinition
 title: Compare graph agents with and without an interpreter
 task_id: graph-ptc-benchmark
 artifact_version: "3.0"
-revision: "2"
+revision: "3"
 created_at: "2026-09-12T21:10:09Z"
-updated_at: "2026-09-13T03:56:45Z"
+updated_at: "2026-09-13T04:27:25Z"
 validation_profile: skills/task-definition/profiles/task-definition.yaml
 ---
 
@@ -82,14 +82,14 @@ TD1 Standard. DIRECT after readiness gates. The selected predecessor is main at
 e78210c98dda92cdde37750931e76e0edbbb20ee. Read this file first before implementing or reviewing PR 2. Reuse the
 prototype's remaining harness files; do not cherry-pick the entire experiment.
 Worktree: .worktrees/graph-ptc-benchmark; branch: codex/graph-ptc-benchmark.
-Revision 2 records current execution authority and the verified merged baseline;
+Revision 3 records authorized BLK-1 remediation after convergent-review Round 1;
 the success criteria and review boundary are unchanged.
 
 ### Execution Checkpoint
 
 | Execution status | Current proving slice | Evidence admitted | Next action | Blockers / stop condition |
 | --- | --- | --- | --- | --- |
-| review-ready | Isolated benchmark harness, TD-SC-1 through TD-SC-3. | TD-SC-1: real DeepAgents/QuickJS arm and model-visible contract tests pass. TD-SC-2: interrupted-work snapshots, usage, scheduling and persistence tests pass; all 24 scripted campaign attempts are correct. TD-SC-3: report arithmetic/framing tests and all 134 offline tests pass; scripted usage stays unknown; all 23 preserved prototype/pilot hashes match. Evidence: results/graph-ptc-benchmark/verification.md. | Open PR 2 against main for independent review. | Not independently approved. Stop before merge, paid calls or PR 3 implementation. |
+| review-ready | TD-SC-1 through TD-SC-3, with BLK-1 interpreter cleanup remediated. | TD-SC-1: real capability and model-visible contract tests pass. TD-SC-2: nine subprocess exit regressions pass, and the original provider-error, campaign-error and timeout reproductions exit normally with accounting retained; all 24 scripted attempts are correct. TD-SC-3: 50 focused and all 143 offline tests pass; no live benefit claims. All 23 preserved hashes match. Evidence: results/convergent-review/pr11-graph-benchmark/round2/pre-commit-validation.json. | Publish the remediation commit to PR 11 and perform independent convergent-review Round 2 against the unchanged contract. | Closure of BLK-1 requires independent review. Stop before merge, paid calls, dependency forks or PR 3 implementation. |
 
 ## Follow-up / Non-blocking Work
 
