@@ -1,0 +1,1755 @@
+{
+  "schema_version": 1,
+  "sample_kind": "historical-development",
+  "corrected_raw_sha256": "c1c0705ceb4d9f0e2233411a95294c87b30821d85e1cd801fe21ca620ed97900",
+  "excluded_first_raw_sha256": "c102c9bd0b8202afd98bad196d06e419374acdf3d157eaa296f00fc1ebc81e0b",
+  "historical_primary": [
+    "compute",
+    "ptc"
+  ],
+  "presentation_primary": [
+    "ordinary",
+    "ptc"
+  ],
+  "presentation_secondary": [
+    "compute",
+    "ptc"
+  ],
+  "correctness_basis": "Recorded historical scorer; not rescored on current code.",
+  "created_at": "2026-09-12T19:56:42.896556+00:00",
+  "config": {
+    "model": "openai:gpt-5.6-luna",
+    "seeds": [
+      1103,
+      2213
+    ],
+    "cases": [
+      {
+        "name": "lookup",
+        "kind": "lookup",
+        "depth": 3,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "depth-2",
+        "kind": "introductions",
+        "depth": 2,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "depth-3",
+        "kind": "introductions",
+        "depth": 3,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "width-12",
+        "kind": "introductions",
+        "depth": 3,
+        "width": 12,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      }
+    ],
+    "run_timeout": 180,
+    "model_timeout": 60,
+    "interpreter_timeout": 10,
+    "max_tool_calls": 64,
+    "concurrency": 4,
+    "recursion_limit": 48
+  },
+  "model_settings": {
+    "timeout": 60,
+    "max_retries": 0,
+    "use_responses_api": true
+  },
+  "versions": {
+    "deepagents": "0.7.8",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "langchain-quickjs": "0.3.5",
+    "quickjs-rs": "0.2.5"
+  },
+  "source_sha256": {
+    "fixture.py": "cf9b6c62cea3689e33aaad3c8f644c118699f1ebae64bf64c0e6ff3b6127cccb",
+    "runner.py": "89a008ab59b44b51f3651f52bd3abe6992044f4fe8cfe27a0428cecdbafad8af",
+    "trial.py": "22e2d7a870d0d79102a25effbc287f64566706b976ce26f32591f42052505643",
+    "config.py": "708f4fcfb1e860cf6cbfd1804fad1b19c6a4d9d910a5665d2212c6b0a7c94597",
+    "tools.py": "3cc5672d0c9ab8bd791ab0c16254fcb35c7c7ca21f4b01105e03e33c2c5afd18",
+    "__init__.py": "160469560d09669255902c413e15238f6c37fcd2344aef5f2bca5ce0e7b7e3ce",
+    "coverage.py": "db2ccc6645ba4ae853955f6488fd1d86f14361a0c5e2695af32dae35ef88f252",
+    "prompts.py": "f557e66ae3b9790a6f2cf5e28ae2d293e55ee978922b0319a4de656b4b60798f",
+    "oracle.py": "8f00b989ec103ac739463f11837ffc3aa4383c38bb3c8810a47caead9ce1393e",
+    "report.py": "aa7344c80d348b723aca6e9fd58b486818e5dfa390c1ceca8f75aed9ab77e66a",
+    "measurements.py": "9efca65b2317c0803a14afdae7a311826a1fcd8f44182023fce8897406aafdf6",
+    "smoke.py": "652a82eeccc4ebb6dcc97988128a5b09dea42c81bb165b0b27f750cd06e45978",
+    "incident_metrics.py": "e3ac90b5fc2abae984ee4637c629eb591244bf94439ca1226f2f074998c4801a",
+    "graph-ptc-value.py": "b0d0baf2b27247a562b25cc921f9e8a3d96d083118bd3c933594dc818da1451f"
+  },
+  "trials": [
+    {
+      "case": "lookup",
+      "seed": 1103,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 3.6190143330022693,
+      "model_calls": 2,
+      "input_tokens": 4810,
+      "output_tokens": 70,
+      "total_tokens": 4880,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 45,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2365,
+            "output_tokens": 48,
+            "total_tokens": 2413
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2445,
+            "output_tokens": 22,
+            "total_tokens": 2467
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 48
+        }
+      ],
+      "backend_read_sha256": "dd72e7477b00b3a88c0ce060279db11dec0103db5f8355f65c086c4c65400548",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "lookup",
+      "seed": 1103,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 3.2725930419983342,
+      "model_calls": 2,
+      "input_tokens": 5436,
+      "output_tokens": 74,
+      "total_tokens": 5510,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 45,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2676,
+            "output_tokens": 52,
+            "total_tokens": 2728
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2760,
+            "output_tokens": 22,
+            "total_tokens": 2782
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 48
+        }
+      ],
+      "backend_read_sha256": "dd72e7477b00b3a88c0ce060279db11dec0103db5f8355f65c086c4c65400548",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "lookup",
+      "seed": 1103,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 4.9680886669957545,
+      "model_calls": 2,
+      "input_tokens": 6290,
+      "output_tokens": 82,
+      "total_tokens": 6372,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 45,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3099,
+            "output_tokens": 60,
+            "total_tokens": 3159
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3191,
+            "output_tokens": 22,
+            "total_tokens": 3213
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 62
+        }
+      ],
+      "backend_read_sha256": "dd72e7477b00b3a88c0ce060279db11dec0103db5f8355f65c086c4c65400548",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "lookup",
+      "seed": 2213,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 3.2335178749926854,
+      "model_calls": 2,
+      "input_tokens": 6307,
+      "output_tokens": 95,
+      "total_tokens": 6402,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 47,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3101,
+            "output_tokens": 72,
+            "total_tokens": 3173
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3206,
+            "output_tokens": 23,
+            "total_tokens": 3229
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 64
+        }
+      ],
+      "backend_read_sha256": "c84f9f58b4112d63efaba5ce5ad418530b03f69f903c268e32c82c43c01b8300",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "lookup",
+      "seed": 2213,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 3.5790829169854987,
+      "model_calls": 2,
+      "input_tokens": 5549,
+      "output_tokens": 183,
+      "total_tokens": 5732,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 47,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2678,
+            "output_tokens": 160,
+            "total_tokens": 2838
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2871,
+            "output_tokens": 23,
+            "total_tokens": 2894
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 50
+        }
+      ],
+      "backend_read_sha256": "c84f9f58b4112d63efaba5ce5ad418530b03f69f903c268e32c82c43c01b8300",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "lookup",
+      "seed": 2213,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 2.8755964169977233,
+      "model_calls": 2,
+      "input_tokens": 4816,
+      "output_tokens": 72,
+      "total_tokens": 4888,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 47,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2367,
+            "output_tokens": 49,
+            "total_tokens": 2416
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2449,
+            "output_tokens": 23,
+            "total_tokens": 2472
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 50
+        }
+      ],
+      "backend_read_sha256": "c84f9f58b4112d63efaba5ce5ad418530b03f69f903c268e32c82c43c01b8300",
+      "backend_calls": 1,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 1103,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 10.913012083008653,
+      "model_calls": 4,
+      "input_tokens": 14451,
+      "output_tokens": 860,
+      "total_tokens": 15311,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2373,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 67,
+            "total_tokens": 2943
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3218,
+            "output_tokens": 93,
+            "total_tokens": 3311
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 4003,
+            "output_tokens": 195,
+            "total_tokens": 4198
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4354,
+            "output_tokens": 505,
+            "total_tokens": 4859
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2573
+        }
+      ],
+      "backend_read_sha256": "7df26d6b858c688a637027b1eec0c7beafb1be1bfe95d7145442f72c4fc9dc42",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 1103,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 15.870514790993184,
+      "model_calls": 4,
+      "input_tokens": 16710,
+      "output_tokens": 1485,
+      "total_tokens": 18195,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2373,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 727,
+            "total_tokens": 4026
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 4098,
+            "output_tokens": 263,
+            "total_tokens": 4361
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 177
+        },
+        {
+          "usage": {
+            "input_tokens": 4404,
+            "output_tokens": 219,
+            "total_tokens": 4623
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 280
+        },
+        {
+          "usage": {
+            "input_tokens": 4909,
+            "output_tokens": 276,
+            "total_tokens": 5185
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 823
+        }
+      ],
+      "backend_read_sha256": "0e1079b0cac2afcff18b5cfba8a29e28897d606d09b0051ff708dd80f77d77c0",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 1103,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 11.057507749996148,
+      "model_calls": 4,
+      "input_tokens": 13494,
+      "output_tokens": 973,
+      "total_tokens": 14467,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2373,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 143,
+            "total_tokens": 2708
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2983,
+            "output_tokens": 117,
+            "total_tokens": 3100
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 3792,
+            "output_tokens": 206,
+            "total_tokens": 3998
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4154,
+            "output_tokens": 507,
+            "total_tokens": 4661
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2573
+        }
+      ],
+      "backend_read_sha256": "7df26d6b858c688a637027b1eec0c7beafb1be1bfe95d7145442f72c4fc9dc42",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 2213,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 10.032545875001233,
+      "model_calls": 4,
+      "input_tokens": 13295,
+      "output_tokens": 603,
+      "total_tokens": 13898,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2377,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2566,
+            "output_tokens": 71,
+            "total_tokens": 2637
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2913,
+            "output_tokens": 90,
+            "total_tokens": 3003
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 3691,
+            "output_tokens": 274,
+            "total_tokens": 3965
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4125,
+            "output_tokens": 168,
+            "total_tokens": 4293
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2577
+        }
+      ],
+      "backend_read_sha256": "913c6f4db50075f4f06d38d5fa08dd4fdec51a1be5a4a9ce6aff492f1c030633",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 2213,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 9.267053916992154,
+      "model_calls": 2,
+      "input_tokens": 7501,
+      "output_tokens": 891,
+      "total_tokens": 8392,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2377,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3300,
+            "output_tokens": 817,
+            "total_tokens": 4117
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 4201,
+            "output_tokens": 74,
+            "total_tokens": 4275
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 152
+        }
+      ],
+      "backend_read_sha256": "701b6bcbf6d406b527fa95bc981db57dd54b3f4ef4dc1b7b2ab6b3da09ae61d9",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-2",
+      "seed": 2213,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 7.38900675001787,
+      "model_calls": 4,
+      "input_tokens": 14513,
+      "output_tokens": 552,
+      "total_tokens": 15065,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 2377,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2877,
+            "output_tokens": 88,
+            "total_tokens": 2965
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3241,
+            "output_tokens": 94,
+            "total_tokens": 3335
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 4023,
+            "output_tokens": 189,
+            "total_tokens": 4212
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4372,
+            "output_tokens": 181,
+            "total_tokens": 4553
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2577
+        }
+      ],
+      "backend_read_sha256": "913c6f4db50075f4f06d38d5fa08dd4fdec51a1be5a4a9ce6aff492f1c030633",
+      "backend_calls": 4,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 1103,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 32.5060054170026,
+      "model_calls": 3,
+      "input_tokens": 15942,
+      "output_tokens": 3061,
+      "total_tokens": 19003,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4816,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1502,
+            "total_tokens": 4801
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 5537,
+            "output_tokens": 833,
+            "total_tokens": 6370
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 1375
+        },
+        {
+          "usage": {
+            "input_tokens": 7106,
+            "output_tokens": 726,
+            "total_tokens": 7832
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2750
+        }
+      ],
+      "backend_read_sha256": "15e971fb870e4d57023e77fed9d86d649d4502418785792145f8f28d3f19831c",
+      "backend_calls": 7,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 1103,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 28.15418320801109,
+      "model_calls": 5,
+      "input_tokens": 18978,
+      "output_tokens": 2437,
+      "total_tokens": 21415,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4223,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 95,
+            "total_tokens": 2660
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2935,
+            "output_tokens": 104,
+            "total_tokens": 3039
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 3731,
+            "output_tokens": 104,
+            "total_tokens": 3835
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4572,
+            "output_tokens": 337,
+            "total_tokens": 4909
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 3939
+        },
+        {
+          "usage": {
+            "input_tokens": 5175,
+            "output_tokens": 1797,
+            "total_tokens": 6972
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 4582
+        }
+      ],
+      "backend_read_sha256": "6908bcb60b7ecb811df14e418f9842dd2dcf5610982281f9ba11c0531e780edd",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 1103,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 35.55983791698236,
+      "model_calls": 5,
+      "input_tokens": 20448,
+      "output_tokens": 2369,
+      "total_tokens": 22817,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4223,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 68,
+            "total_tokens": 2944
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3219,
+            "output_tokens": 105,
+            "total_tokens": 3324
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 4016,
+            "output_tokens": 120,
+            "total_tokens": 4136
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4873,
+            "output_tokens": 325,
+            "total_tokens": 5198
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 3939
+        },
+        {
+          "usage": {
+            "input_tokens": 5464,
+            "output_tokens": 1751,
+            "total_tokens": 7215
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 4582
+        }
+      ],
+      "backend_read_sha256": "6908bcb60b7ecb811df14e418f9842dd2dcf5610982281f9ba11c0531e780edd",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 2213,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 26.496861999999965,
+      "model_calls": 6,
+      "input_tokens": 25440,
+      "output_tokens": 2521,
+      "total_tokens": 27961,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4137,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2877,
+            "output_tokens": 100,
+            "total_tokens": 2977
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3253,
+            "output_tokens": 91,
+            "total_tokens": 3344
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 4032,
+            "output_tokens": 214,
+            "total_tokens": 4246
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4406,
+            "output_tokens": 174,
+            "total_tokens": 4580
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 2577
+        },
+        {
+          "usage": {
+            "input_tokens": 5277,
+            "output_tokens": 195,
+            "total_tokens": 5472
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 4193
+        },
+        {
+          "usage": {
+            "input_tokens": 5595,
+            "output_tokens": 1747,
+            "total_tokens": 7342
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 4485
+        }
+      ],
+      "backend_read_sha256": "3cc8619fad27217fbb5e4d49f6501affe9e14c6f001f5d982c56f0327541e977",
+      "backend_calls": 7,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 2213,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 31.872589082980994,
+      "model_calls": 6,
+      "input_tokens": 23867,
+      "output_tokens": 2662,
+      "total_tokens": 26529,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4134,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2566,
+            "output_tokens": 83,
+            "total_tokens": 2649
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 2925,
+            "output_tokens": 90,
+            "total_tokens": 3015
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 606
+        },
+        {
+          "usage": {
+            "input_tokens": 3703,
+            "output_tokens": 154,
+            "total_tokens": 3857
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 2222
+        },
+        {
+          "usage": {
+            "input_tokens": 4554,
+            "output_tokens": 194,
+            "total_tokens": 4748
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles"
+          ],
+          "tool_result_text_chars": 3838
+        },
+        {
+          "usage": {
+            "input_tokens": 4982,
+            "output_tokens": 117,
+            "total_tokens": 5099
+          },
+          "completed": true,
+          "tool_names": [
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 4426
+        },
+        {
+          "usage": {
+            "input_tokens": 5137,
+            "output_tokens": 2024,
+            "total_tokens": 7161
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 4485
+        }
+      ],
+      "backend_read_sha256": "daec4f4eef8c343ef22762636068ae356dc0f1eef45ab87b142ff9e64cd793e7",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "depth-3",
+      "seed": 2213,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 26.231827042007353,
+      "model_calls": 2,
+      "input_tokens": 9004,
+      "output_tokens": 2579,
+      "total_tokens": 11583,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 4134,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3300,
+            "output_tokens": 1620,
+            "total_tokens": 4920
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 5704,
+            "output_tokens": 959,
+            "total_tokens": 6663
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 1440
+        }
+      ],
+      "backend_read_sha256": "d8a63ea0b604017b963f9ff7c650d62a99c7dae03e153a10227201b0893f1ea7",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 1103,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 56.125628082983894,
+      "model_calls": 5,
+      "input_tokens": 24531,
+      "output_tokens": 4552,
+      "total_tokens": 29083,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8720,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 75,
+            "total_tokens": 2640
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3173,
+            "output_tokens": 138,
+            "total_tokens": 3311
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 1212
+        },
+        {
+          "usage": {
+            "input_tokens": 4744,
+            "output_tokens": 184,
+            "total_tokens": 4928
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 4545
+        },
+        {
+          "usage": {
+            "input_tokens": 6497,
+            "output_tokens": 534,
+            "total_tokens": 7031
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 8181
+        },
+        {
+          "usage": {
+            "input_tokens": 7552,
+            "output_tokens": 3621,
+            "total_tokens": 11173
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 9467
+        }
+      ],
+      "backend_read_sha256": "0fec34ce7493933e490bf5c695498c32893d33bc8a964e51b610b754b6b8fc9e",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 1103,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 35.0428652499977,
+      "model_calls": 6,
+      "input_tokens": 37031,
+      "output_tokens": 4061,
+      "total_tokens": 41092,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8720,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 117,
+            "total_tokens": 2993
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3526,
+            "output_tokens": 135,
+            "total_tokens": 3661
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 1212
+        },
+        {
+          "usage": {
+            "input_tokens": 5094,
+            "output_tokens": 213,
+            "total_tokens": 5307
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 4545
+        },
+        {
+          "usage": {
+            "input_tokens": 6876,
+            "output_tokens": 517,
+            "total_tokens": 7393
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 8181
+        },
+        {
+          "usage": {
+            "input_tokens": 7914,
+            "output_tokens": 1544,
+            "total_tokens": 9458
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 9467
+        },
+        {
+          "usage": {
+            "input_tokens": 10745,
+            "output_tokens": 1535,
+            "total_tokens": 12280
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 11798
+        }
+      ],
+      "backend_read_sha256": "0fec34ce7493933e490bf5c695498c32893d33bc8a964e51b610b754b6b8fc9e",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 1103,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 37.74154175000149,
+      "model_calls": 2,
+      "input_tokens": 10147,
+      "output_tokens": 3643,
+      "total_tokens": 13790,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8720,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 2262,
+            "total_tokens": 5561
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 6848,
+            "output_tokens": 1381,
+            "total_tokens": 8229
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2331
+        }
+      ],
+      "backend_read_sha256": "0fec34ce7493933e490bf5c695498c32893d33bc8a964e51b610b754b6b8fc9e",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 2213,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 32.56193470899598,
+      "model_calls": 2,
+      "input_tokens": 9903,
+      "output_tokens": 3385,
+      "total_tokens": 13288,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8538,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3300,
+            "output_tokens": 2143,
+            "total_tokens": 5443
+          },
+          "completed": true,
+          "tool_names": [
+            "eval"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 6603,
+            "output_tokens": 1242,
+            "total_tokens": 7845
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 2060
+        }
+      ],
+      "backend_read_sha256": "ac51a81ee82051f90dedae928c90d4ef56c84430942a30796bbcd7a76ad2be46",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 2213,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 33.885082791995956,
+      "model_calls": 5,
+      "input_tokens": 25806,
+      "output_tokens": 3725,
+      "total_tokens": 29531,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8538,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2877,
+            "output_tokens": 67,
+            "total_tokens": 2944
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3487,
+            "output_tokens": 138,
+            "total_tokens": 3625
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 1212
+        },
+        {
+          "usage": {
+            "input_tokens": 4958,
+            "output_tokens": 202,
+            "total_tokens": 5160
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 4343
+        },
+        {
+          "usage": {
+            "input_tokens": 6709,
+            "output_tokens": 551,
+            "total_tokens": 7260
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 7979
+        },
+        {
+          "usage": {
+            "input_tokens": 7775,
+            "output_tokens": 2767,
+            "total_tokens": 10542
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 9269
+        }
+      ],
+      "backend_read_sha256": "ac51a81ee82051f90dedae928c90d4ef56c84430942a30796bbcd7a76ad2be46",
+      "backend_calls": 5,
+      "eval_errors": 0
+    },
+    {
+      "case": "width-12",
+      "seed": 2213,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 42.34542379100458,
+      "model_calls": 5,
+      "input_tokens": 24967,
+      "output_tokens": 4675,
+      "total_tokens": 29642,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "response_bytes": 8540,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2566,
+            "output_tokens": 74,
+            "total_tokens": 2640
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 0
+        },
+        {
+          "usage": {
+            "input_tokens": 3183,
+            "output_tokens": 135,
+            "total_tokens": 3318
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors"
+          ],
+          "tool_result_text_chars": 1212
+        },
+        {
+          "usage": {
+            "input_tokens": 4651,
+            "output_tokens": 449,
+            "total_tokens": 5100
+          },
+          "completed": true,
+          "tool_names": [
+            "get_neighbors",
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 4343
+        },
+        {
+          "usage": {
+            "input_tokens": 6917,
+            "output_tokens": 463,
+            "total_tokens": 7380
+          },
+          "completed": true,
+          "tool_names": [
+            "get_profiles",
+            "get_contact_history"
+          ],
+          "tool_result_text_chars": 8624
+        },
+        {
+          "usage": {
+            "input_tokens": 7650,
+            "output_tokens": 3554,
+            "total_tokens": 11204
+          },
+          "completed": true,
+          "tool_names": [],
+          "tool_result_text_chars": 9269
+        }
+      ],
+      "backend_read_sha256": "6adaec59dfe2586423b2bd53c38433fcbbdcdb62d29069ef03d7093b63367856",
+      "backend_calls": 7,
+      "eval_errors": 0
+    }
+  ]
+}
