@@ -144,3 +144,40 @@ results. Host cells create and update the fixture; keep write connections closed
 while the agent reads. To explore your own CSV/Parquet, load it into tables from
 host Python first. The notebook documents query, output and interpreter limits;
 this remains a local experiment, not a process sandbox.
+
+## DuckDB warm introductions
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-warm-introductions.ipynb
+```
+
+Forked from the basic DuckDB notebook. Find ranked, evidence-backed routes into
+a synthetic job's team through direct contacts or up to three directed hops.
+The fixture includes duplicate connectors, a weak high-degree hub, stale and
+reverse-only edges, former employees and other distractors. Each answer includes
+ordered relationship evidence and current-employment evidence. An independent
+Python traversal checks the SQL results. The ranking is a fixture heuristic,
+not a calibrated prediction of introduction success.
+
+Run All with `RUN_LIVE=False` executes five provider-free agent invocations:
+both tool transports, error recovery in each, and an employment-update probe.
+Checks read actual SQL/eval outputs. `HUB_SIZE` (1–1000), `Question.max_hops`
+(1–3), recency and `Question.top_k` (1–10) are exploration knobs. Rerun from
+fixture setup after changing them. The update probe restores the original data.
+
+Set `RUN_LIVE=True` for one matched pair by default: two paid agent invocations,
+potentially several provider calls each. `LIVE_PAIRS` supports 1–5 pairs and
+alternates arm order. Only LIVE loads `ENV_FILE`; use an absolute path to your
+existing checkout's ignored `.env` if needed. Both arms receive identical SQL
+capabilities and may solve the task with one query. The reference SQL and oracle
+answer are never sent to live agents. An interpreter speedup is not assumed.
+
+Unique ignored `results/duckdb-warm-introductions/` directories hold the DuckDB
+file, per-attempt JSON and live manifests. Inspect generated calls, results,
+errors, correctness, model calls, tokens and invocation latency together.
+Missing usage stays unknown, with partial reported usage retained in call details.
+Scripted runs are plumbing evidence; they do not measure provider performance.
+Helpers live in `src/deepagents_lab/experiments/duckdb_warm_introductions/` and
+reuse the basic notebook's read-only bridge. SQL errors return recoverable objects
+and count toward the same 12-call budget in both arms.

@@ -13,6 +13,7 @@ NOTEBOOKS = [
     "experiments/graph-workspace",
     "experiments/graph-ptc-value",
     "experiments/duckdb-code-interpreter",
+    "experiments/duckdb-warm-introductions",
 ]
 
 

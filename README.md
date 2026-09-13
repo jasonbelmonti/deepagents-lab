@@ -233,6 +233,19 @@ data update. Set `RUN_LIVE=True` to let the configured model write its own SQL
 and JavaScript. See [the notebook guide](notebooks/README.md#duckdb-code-interpreter)
 for setup and experiment boundaries.
 
+For **evidence-backed warm introductions into a job**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-warm-introductions.ipynb
+```
+
+This fork compares ordinary SQL tools with interpreter-assisted SQL on the same
+synthetic social network. It includes direct contacts, distinct first connectors,
+relationship evidence and current team membership. Run All verifies real tool
+outputs offline; opt-in LIVE pairs record tokens, invocation latency and fixture
+correctness. See [the notebook guide](notebooks/README.md#duckdb-warm-introductions).
+
 Each `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
 Keep both files synchronized and output-free before committing:
 
