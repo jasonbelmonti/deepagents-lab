@@ -111,3 +111,36 @@ recorded failures, pair counts, tokens and latency. They predate current harness
 fixes and are not current-code validation or held-out evidence. Scripted timings
 are not live benefits. Keep all notebook outputs local and commit only the
 synchronized source pair.
+
+## DuckDB code interpreter
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-code-interpreter.ipynb
+```
+
+DuckDB is included in the optional `notebooks` dependency group. No database
+server or additional service is required. Run All needs no credentials: a
+scripted model drives real DeepAgents + QuickJS + DuckDB, and checks the actual
+interpreter results before and after a database update.
+
+The interpreter runs JavaScript. `tools.duckdbSchema({})` and
+`tools.queryDuckdb({sql, parameters})` bridge to Python's DuckDB package at
+runtime. The notebook shows the agent construction, allowlist, SQL, generated
+messages and query log. Helpers live in
+`src/deepagents_lab/experiments/duckdb_runtime/`. Database files live in unique,
+ignored `results/duckdb-code-interpreter/` directories.
+
+For a real model, set `RUN_LIVE = True` and edit `QUESTION`. That section loads
+`ENV_FILE = ROOT / ".env"`; point it at an absolute `.env` path when working in
+a separate checkout. Existing environment values take precedence. The default
+model follows `DEEPAGENTS_LAB_MODEL` or the lab default and uses `OPENAI_API_KEY`.
+Each live invocation may incur multiple provider requests; rerunning it makes
+new calls. The offline recipe is never included in the live prompt.
+
+The agent can run one SELECT/CTE per query, with parameters, joins, aggregation
+and window functions. The bridge rejects writes, external reads and oversized
+results. Host cells create and update the fixture; keep write connections closed
+while the agent reads. To explore your own CSV/Parquet, load it into tables from
+host Python first. The notebook documents query, output and interpreter limits;
+this remains a local experiment, not a process sandbox.
