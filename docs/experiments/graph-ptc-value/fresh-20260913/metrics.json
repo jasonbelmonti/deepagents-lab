@@ -1,0 +1,3411 @@
+{
+  "schema_version": 1,
+  "sample_kind": "fresh-seed-campaign",
+  "measured_head": "cb919679e221b39541d928358830f9b39f8d5124",
+  "raw_sha256": "7b84342ae0f2bb99cb35c1314080e586fe2b1516ea40aafdc61240162b1c164e",
+  "frozen_config_sha256": "1c4c4046e138e6d26777d1f63aa026ea2113247ce472f975ceb0e993c6292bf0",
+  "created_at": "2026-09-13T12:39:38.316635+00:00",
+  "config": {
+    "model": "openai:gpt-5.6-luna",
+    "seeds": [
+      39047,
+      58271,
+      76493,
+      91807
+    ],
+    "cases": [
+      {
+        "name": "lookup",
+        "kind": "lookup",
+        "depth": 3,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "depth-2",
+        "kind": "introductions",
+        "depth": 2,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "depth-3",
+        "kind": "introductions",
+        "depth": 3,
+        "width": 6,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "width-12",
+        "kind": "introductions",
+        "depth": 3,
+        "width": 12,
+        "topic": "graphs",
+        "min_connectors": 1,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      },
+      {
+        "name": "security-two-connectors",
+        "kind": "introductions",
+        "depth": 3,
+        "width": 6,
+        "topic": "security",
+        "min_connectors": 2,
+        "limit": 5,
+        "edge_since": "2026-01-01",
+        "contact_since": "2026-08-01"
+      }
+    ],
+    "run_timeout": 180,
+    "model_timeout": 60,
+    "interpreter_timeout": 10,
+    "max_tool_calls": 64,
+    "concurrency": 4,
+    "recursion_limit": 48
+  },
+  "comparisons": {
+    "primary": [
+      "ordinary",
+      "ptc"
+    ],
+    "secondary": [
+      "compute",
+      "ptc"
+    ]
+  },
+  "model_settings": {
+    "timeout": 60,
+    "max_retries": 0,
+    "use_responses_api": true
+  },
+  "versions": {
+    "deepagents": "0.7.8",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "langchain-quickjs": "0.3.5",
+    "quickjs-rs": "0.2.5"
+  },
+  "source_sha256": {
+    "fixture.py": "cf9b6c62cea3689e33aaad3c8f644c118699f1ebae64bf64c0e6ff3b6127cccb",
+    "runner.py": "e8a93893b00dcd11058dbe87c4de3b2137e7e17c02b25d901864d440f52322bd",
+    "trial.py": "f8e647d4c77569df6243f714159e0d3cf0486613f62d78cd9a01512fade27393",
+    "config.py": "708f4fcfb1e860cf6cbfd1804fad1b19c6a4d9d910a5665d2212c6b0a7c94597",
+    "tools.py": "5b7c0c19e1874432da21943031df1707bd17542581890302c285f2632c825f95",
+    "__init__.py": "160469560d09669255902c413e15238f6c37fcd2344aef5f2bca5ce0e7b7e3ce",
+    "coverage.py": "422873d90b81410763a479ffebb569cbb245fb9330d3176ffc38e7a834af55fd",
+    "prompts.py": "f557e66ae3b9790a6f2cf5e28ae2d293e55ee978922b0319a4de656b4b60798f",
+    "oracle.py": "8f00b989ec103ac739463f11837ffc3aa4383c38bb3c8810a47caead9ce1393e",
+    "report.py": "ab0b4243f95895966ff2a41931da1990257ed2f2f74b45753593e7041d16f89f",
+    "measurements.py": "979495398b917f82ef0576c8f115663802d31f303ccc2f3747065d9b87a38e53",
+    "smoke.py": "652a82eeccc4ebb6dcc97988128a5b09dea42c81bb165b0b27f750cd06e45978",
+    "incident_metrics.py": "e3ac90b5fc2abae984ee4637c629eb591244bf94439ca1226f2f074998c4801a",
+    "graph-ptc-value.py": "66a5f8cb626ebdcc2f22cdb906ab10a4038c777907bdf1ada5153388afb9eef2"
+  },
+  "trials": [
+    {
+      "case": "lookup",
+      "seed": 39047,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 6.468541959000049,
+      "model_calls": 2,
+      "input_tokens": 4811,
+      "output_tokens": 71,
+      "total_tokens": 4882,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2365,
+            "output_tokens": 49,
+            "total_tokens": 2414
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2446,
+            "output_tokens": 22,
+            "total_tokens": 2468
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 39047,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 4.500824458999887,
+      "model_calls": 2,
+      "input_tokens": 5525,
+      "output_tokens": 163,
+      "total_tokens": 5688,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2676,
+            "output_tokens": 141,
+            "total_tokens": 2817
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2849,
+            "output_tokens": 22,
+            "total_tokens": 2871
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 39047,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 7.939159124999605,
+      "model_calls": 2,
+      "input_tokens": 6300,
+      "output_tokens": 92,
+      "total_tokens": 6392,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3099,
+            "output_tokens": 70,
+            "total_tokens": 3169
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3201,
+            "output_tokens": 22,
+            "total_tokens": 3223
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 58271,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 5.312845832999756,
+      "model_calls": 1,
+      "input_tokens": 3099,
+      "output_tokens": 318,
+      "total_tokens": 3417,
+      "validation": null,
+      "error_type": "ValueError",
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3099,
+            "output_tokens": 318,
+            "total_tokens": 3417
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 58271,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 5.559244209000099,
+      "model_calls": 3,
+      "input_tokens": 9773,
+      "output_tokens": 266,
+      "total_tokens": 10039,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2676,
+            "output_tokens": 91,
+            "total_tokens": 2767
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3084,
+            "output_tokens": 153,
+            "total_tokens": 3237
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4013,
+            "output_tokens": 22,
+            "total_tokens": 4035
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 58271,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 2.7487925419995918,
+      "model_calls": 2,
+      "input_tokens": 4810,
+      "output_tokens": 70,
+      "total_tokens": 4880,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2365,
+            "output_tokens": 48,
+            "total_tokens": 2413
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2445,
+            "output_tokens": 22,
+            "total_tokens": 2467
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 76493,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 3.567074500000217,
+      "model_calls": 2,
+      "input_tokens": 5427,
+      "output_tokens": 69,
+      "total_tokens": 5496,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2674,
+            "output_tokens": 48,
+            "total_tokens": 2722
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2753,
+            "output_tokens": 21,
+            "total_tokens": 2774
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 76493,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 4.033792749999975,
+      "model_calls": 2,
+      "input_tokens": 6286,
+      "output_tokens": 82,
+      "total_tokens": 6368,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3097,
+            "output_tokens": 61,
+            "total_tokens": 3158
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3189,
+            "output_tokens": 21,
+            "total_tokens": 3210
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 76493,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 2.535138458000347,
+      "model_calls": 2,
+      "input_tokens": 4806,
+      "output_tokens": 70,
+      "total_tokens": 4876,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2363,
+            "output_tokens": 49,
+            "total_tokens": 2412
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2443,
+            "output_tokens": 21,
+            "total_tokens": 2464
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 91807,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 4.288937332999922,
+      "model_calls": 2,
+      "input_tokens": 4822,
+      "output_tokens": 74,
+      "total_tokens": 4896,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2369,
+            "output_tokens": 50,
+            "total_tokens": 2419
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2453,
+            "output_tokens": 24,
+            "total_tokens": 2477
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 91807,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 6.812685709000107,
+      "model_calls": 2,
+      "input_tokens": 6579,
+      "output_tokens": 363,
+      "total_tokens": 6942,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3103,
+            "output_tokens": 339,
+            "total_tokens": 3442
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3476,
+            "output_tokens": 24,
+            "total_tokens": 3500
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "lookup",
+      "seed": 91807,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 7.823866167000233,
+      "model_calls": 3,
+      "input_tokens": 9448,
+      "output_tokens": 368,
+      "total_tokens": 9816,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2680,
+            "output_tokens": 221,
+            "total_tokens": 2901
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3238,
+            "output_tokens": 123,
+            "total_tokens": 3361
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3530,
+            "output_tokens": 24,
+            "total_tokens": 3554
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 39047,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 22.042064457999913,
+      "model_calls": 5,
+      "input_tokens": 20086,
+      "output_tokens": 1472,
+      "total_tokens": 21558,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 87,
+            "total_tokens": 2963
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3241,
+            "output_tokens": 98,
+            "total_tokens": 3339
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4053,
+            "output_tokens": 206,
+            "total_tokens": 4259
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4418,
+            "output_tokens": 711,
+            "total_tokens": 5129
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5498,
+            "output_tokens": 370,
+            "total_tokens": 5868
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 39047,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 12.257896041000095,
+      "model_calls": 2,
+      "input_tokens": 7738,
+      "output_tokens": 1130,
+      "total_tokens": 8868,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 771,
+            "total_tokens": 4070
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4439,
+            "output_tokens": 359,
+            "total_tokens": 4798
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 39047,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 12.09561929099982,
+      "model_calls": 4,
+      "input_tokens": 13314,
+      "output_tokens": 1033,
+      "total_tokens": 14347,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 76,
+            "total_tokens": 2641
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2919,
+            "output_tokens": 98,
+            "total_tokens": 3017
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3731,
+            "output_tokens": 209,
+            "total_tokens": 3940
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4099,
+            "output_tokens": 650,
+            "total_tokens": 4749
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 58271,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 14.379420707999998,
+      "model_calls": 4,
+      "input_tokens": 13359,
+      "output_tokens": 1132,
+      "total_tokens": 14491,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 75,
+            "total_tokens": 2640
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2913,
+            "output_tokens": 90,
+            "total_tokens": 3003
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3749,
+            "output_tokens": 219,
+            "total_tokens": 3968
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4132,
+            "output_tokens": 748,
+            "total_tokens": 4880
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 58271,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 12.058183500000268,
+      "model_calls": 2,
+      "input_tokens": 7908,
+      "output_tokens": 1312,
+      "total_tokens": 9220,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 934,
+            "total_tokens": 4233
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4609,
+            "output_tokens": 378,
+            "total_tokens": 4987
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 58271,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 11.297293042000092,
+      "model_calls": 4,
+      "input_tokens": 14627,
+      "output_tokens": 1094,
+      "total_tokens": 15721,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 77,
+            "total_tokens": 2953
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3226,
+            "output_tokens": 95,
+            "total_tokens": 3321
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4067,
+            "output_tokens": 227,
+            "total_tokens": 4294
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4458,
+            "output_tokens": 695,
+            "total_tokens": 5153
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 76493,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 11.365033916999892,
+      "model_calls": 2,
+      "input_tokens": 7758,
+      "output_tokens": 1152,
+      "total_tokens": 8910,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3298,
+            "output_tokens": 993,
+            "total_tokens": 4291
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4460,
+            "output_tokens": 159,
+            "total_tokens": 4619
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 76493,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 11.54950429199971,
+      "model_calls": 4,
+      "input_tokens": 13385,
+      "output_tokens": 695,
+      "total_tokens": 14080,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2564,
+            "output_tokens": 78,
+            "total_tokens": 2642
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2913,
+            "output_tokens": 96,
+            "total_tokens": 3009
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3763,
+            "output_tokens": 220,
+            "total_tokens": 3983
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4145,
+            "output_tokens": 301,
+            "total_tokens": 4446
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 76493,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 8.835866916999748,
+      "model_calls": 4,
+      "input_tokens": 14634,
+      "output_tokens": 656,
+      "total_tokens": 15290,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2875,
+            "output_tokens": 81,
+            "total_tokens": 2956
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3227,
+            "output_tokens": 99,
+            "total_tokens": 3326
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4080,
+            "output_tokens": 210,
+            "total_tokens": 4290
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4452,
+            "output_tokens": 266,
+            "total_tokens": 4718
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 91807,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 7.830063916999734,
+      "model_calls": 4,
+      "input_tokens": 14674,
+      "output_tokens": 391,
+      "total_tokens": 15065,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2878,
+            "output_tokens": 77,
+            "total_tokens": 2955
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3245,
+            "output_tokens": 96,
+            "total_tokens": 3341
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4097,
+            "output_tokens": 195,
+            "total_tokens": 4292
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4454,
+            "output_tokens": 23,
+            "total_tokens": 4477
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 91807,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 8.340662917000373,
+      "model_calls": 4,
+      "input_tokens": 13432,
+      "output_tokens": 440,
+      "total_tokens": 13872,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2567,
+            "output_tokens": 72,
+            "total_tokens": 2639
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2929,
+            "output_tokens": 101,
+            "total_tokens": 3030
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3786,
+            "output_tokens": 202,
+            "total_tokens": 3988
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4150,
+            "output_tokens": 65,
+            "total_tokens": 4215
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-2",
+      "seed": 91807,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 13.978773166999872,
+      "model_calls": 2,
+      "input_tokens": 7944,
+      "output_tokens": 1343,
+      "total_tokens": 9287,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3301,
+            "output_tokens": 1326,
+            "total_tokens": 4627
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4643,
+            "output_tokens": 17,
+            "total_tokens": 4660
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 39047,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 26.996303459000046,
+      "model_calls": 4,
+      "input_tokens": 21407,
+      "output_tokens": 3099,
+      "total_tokens": 24506,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1192,
+            "total_tokens": 4491
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5190,
+            "output_tokens": 551,
+            "total_tokens": 5741
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5782,
+            "output_tokens": 655,
+            "total_tokens": 6437
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7136,
+            "output_tokens": 701,
+            "total_tokens": 7837
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 39047,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 27.352915416999622,
+      "model_calls": 5,
+      "input_tokens": 19086,
+      "output_tokens": 2617,
+      "total_tokens": 21703,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 67,
+            "total_tokens": 2632
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2910,
+            "output_tokens": 106,
+            "total_tokens": 3016
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3730,
+            "output_tokens": 147,
+            "total_tokens": 3877
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4628,
+            "output_tokens": 354,
+            "total_tokens": 4982
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5253,
+            "output_tokens": 1943,
+            "total_tokens": 7196
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 39047,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 25.617077834000156,
+      "model_calls": 6,
+      "input_tokens": 26071,
+      "output_tokens": 2820,
+      "total_tokens": 28891,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 82,
+            "total_tokens": 2958
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3236,
+            "output_tokens": 104,
+            "total_tokens": 3340
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4054,
+            "output_tokens": 157,
+            "total_tokens": 4211
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4962,
+            "output_tokens": 191,
+            "total_tokens": 5153
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5389,
+            "output_tokens": 128,
+            "total_tokens": 5517
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5554,
+            "output_tokens": 2158,
+            "total_tokens": 7712
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 58271,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 34.4063523750001,
+      "model_calls": 6,
+      "input_tokens": 29658,
+      "output_tokens": 4245,
+      "total_tokens": 33903,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 72,
+            "total_tokens": 2948
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3221,
+            "output_tokens": 97,
+            "total_tokens": 3318
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4064,
+            "output_tokens": 132,
+            "total_tokens": 4196
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4907,
+            "output_tokens": 334,
+            "total_tokens": 5241
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5518,
+            "output_tokens": 2591,
+            "total_tokens": 8109
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 9072,
+            "output_tokens": 1019,
+            "total_tokens": 10091
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 58271,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 26.279423333999603,
+      "model_calls": 5,
+      "input_tokens": 19198,
+      "output_tokens": 3188,
+      "total_tokens": 22386,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 100,
+            "total_tokens": 2665
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2938,
+            "output_tokens": 98,
+            "total_tokens": 3036
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3782,
+            "output_tokens": 166,
+            "total_tokens": 3948
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4659,
+            "output_tokens": 318,
+            "total_tokens": 4977
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5254,
+            "output_tokens": 2506,
+            "total_tokens": 7760
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 58271,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 19.943747375000385,
+      "model_calls": 2,
+      "input_tokens": 9146,
+      "output_tokens": 2550,
+      "total_tokens": 11696,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1616,
+            "total_tokens": 4915
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5847,
+            "output_tokens": 934,
+            "total_tokens": 6781
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 76493,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 20.55697712500023,
+      "model_calls": 5,
+      "input_tokens": 19340,
+      "output_tokens": 1695,
+      "total_tokens": 21035,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2564,
+            "output_tokens": 61,
+            "total_tokens": 2625
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2896,
+            "output_tokens": 102,
+            "total_tokens": 2998
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3752,
+            "output_tokens": 228,
+            "total_tokens": 3980
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4850,
+            "output_tokens": 266,
+            "total_tokens": 5116
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5278,
+            "output_tokens": 1038,
+            "total_tokens": 6316
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 76493,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 17.56201533300009,
+      "model_calls": 5,
+      "input_tokens": 20703,
+      "output_tokens": 1441,
+      "total_tokens": 22144,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2875,
+            "output_tokens": 83,
+            "total_tokens": 2958
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3229,
+            "output_tokens": 96,
+            "total_tokens": 3325
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4079,
+            "output_tokens": 119,
+            "total_tokens": 4198
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4945,
+            "output_tokens": 356,
+            "total_tokens": 5301
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5575,
+            "output_tokens": 787,
+            "total_tokens": 6362
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 76493,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 14.849568208000164,
+      "model_calls": 2,
+      "input_tokens": 8094,
+      "output_tokens": 1581,
+      "total_tokens": 9675,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3298,
+            "output_tokens": 1178,
+            "total_tokens": 4476
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4796,
+            "output_tokens": 403,
+            "total_tokens": 5199
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 91807,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 17.520967292000023,
+      "model_calls": 2,
+      "input_tokens": 8708,
+      "output_tokens": 2108,
+      "total_tokens": 10816,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3301,
+            "output_tokens": 1352,
+            "total_tokens": 4653
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5407,
+            "output_tokens": 756,
+            "total_tokens": 6163
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 91807,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 21.78114525000001,
+      "model_calls": 5,
+      "input_tokens": 20951,
+      "output_tokens": 2427,
+      "total_tokens": 23378,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2878,
+            "output_tokens": 87,
+            "total_tokens": 2965
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3255,
+            "output_tokens": 113,
+            "total_tokens": 3368
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4108,
+            "output_tokens": 184,
+            "total_tokens": 4292
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5046,
+            "output_tokens": 341,
+            "total_tokens": 5387
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5664,
+            "output_tokens": 1702,
+            "total_tokens": 7366
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "depth-3",
+      "seed": 91807,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 31.8538221660001,
+      "model_calls": 8,
+      "input_tokens": 34970,
+      "output_tokens": 2536,
+      "total_tokens": 37506,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2567,
+            "output_tokens": 64,
+            "total_tokens": 2631
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2921,
+            "output_tokens": 98,
+            "total_tokens": 3019
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3775,
+            "output_tokens": 222,
+            "total_tokens": 3997
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4159,
+            "output_tokens": 139,
+            "total_tokens": 4298
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5052,
+            "output_tokens": 232,
+            "total_tokens": 5284
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5412,
+            "output_tokens": 77,
+            "total_tokens": 5489
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5491,
+            "output_tokens": 100,
+            "total_tokens": 5591
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5593,
+            "output_tokens": 1604,
+            "total_tokens": 7197
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 39047,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 31.19706425000004,
+      "model_calls": 5,
+      "input_tokens": 24884,
+      "output_tokens": 3758,
+      "total_tokens": 28642,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 74,
+            "total_tokens": 2639
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3178,
+            "output_tokens": 143,
+            "total_tokens": 3321
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4813,
+            "output_tokens": 277,
+            "total_tokens": 5090
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6657,
+            "output_tokens": 494,
+            "total_tokens": 7151
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7671,
+            "output_tokens": 2770,
+            "total_tokens": 10441
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 39047,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 27.86807654199947,
+      "model_calls": 5,
+      "input_tokens": 26315,
+      "output_tokens": 3563,
+      "total_tokens": 29878,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 81,
+            "total_tokens": 2957
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3496,
+            "output_tokens": 143,
+            "total_tokens": 3639
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5131,
+            "output_tokens": 180,
+            "total_tokens": 5311
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6878,
+            "output_tokens": 536,
+            "total_tokens": 7414
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7934,
+            "output_tokens": 2623,
+            "total_tokens": 10557
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 39047,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 22.186341083000116,
+      "model_calls": 2,
+      "input_tokens": 9170,
+      "output_tokens": 2753,
+      "total_tokens": 11923,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": false,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1547,
+            "total_tokens": 4846
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5871,
+            "output_tokens": 1206,
+            "total_tokens": 7077
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 58271,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 16.554268124999908,
+      "model_calls": 2,
+      "input_tokens": 9176,
+      "output_tokens": 2789,
+      "total_tokens": 11965,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1241,
+            "total_tokens": 4540
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5877,
+            "output_tokens": 1548,
+            "total_tokens": 7425
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 58271,
+      "arm": "compute",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 33.36666066700036,
+      "model_calls": 5,
+      "input_tokens": 26679,
+      "output_tokens": 4187,
+      "total_tokens": 30866,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 120,
+            "total_tokens": 2996
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3532,
+            "output_tokens": 136,
+            "total_tokens": 3668
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5238,
+            "output_tokens": 196,
+            "total_tokens": 5434
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6956,
+            "output_tokens": 603,
+            "total_tokens": 7559
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 8077,
+            "output_tokens": 3132,
+            "total_tokens": 11209
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 58271,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 38.03537166699971,
+      "model_calls": 6,
+      "input_tokens": 32594,
+      "output_tokens": 4534,
+      "total_tokens": 37128,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 78,
+            "total_tokens": 2643
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3179,
+            "output_tokens": 142,
+            "total_tokens": 3321
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4891,
+            "output_tokens": 203,
+            "total_tokens": 5094
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6616,
+            "output_tokens": 326,
+            "total_tokens": 6942
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7211,
+            "output_tokens": 647,
+            "total_tokens": 7858
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 8132,
+            "output_tokens": 3138,
+            "total_tokens": 11270
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 76493,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 36.13667712499955,
+      "model_calls": 6,
+      "input_tokens": 38403,
+      "output_tokens": 4859,
+      "total_tokens": 43262,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2875,
+            "output_tokens": 82,
+            "total_tokens": 2957
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3484,
+            "output_tokens": 147,
+            "total_tokens": 3631
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5174,
+            "output_tokens": 188,
+            "total_tokens": 5362
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6949,
+            "output_tokens": 644,
+            "total_tokens": 7593
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 8122,
+            "output_tokens": 2683,
+            "total_tokens": 10805
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 11799,
+            "output_tokens": 1115,
+            "total_tokens": 12914
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 76493,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 21.718609042000026,
+      "model_calls": 2,
+      "input_tokens": 9089,
+      "output_tokens": 2616,
+      "total_tokens": 11705,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3298,
+            "output_tokens": 1501,
+            "total_tokens": 4799
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5791,
+            "output_tokens": 1115,
+            "total_tokens": 6906
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 76493,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 31.350260291000268,
+      "model_calls": 5,
+      "input_tokens": 25053,
+      "output_tokens": 3391,
+      "total_tokens": 28444,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2564,
+            "output_tokens": 81,
+            "total_tokens": 2645
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3172,
+            "output_tokens": 165,
+            "total_tokens": 3337
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4880,
+            "output_tokens": 200,
+            "total_tokens": 5080
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6667,
+            "output_tokens": 574,
+            "total_tokens": 7241
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7770,
+            "output_tokens": 2371,
+            "total_tokens": 10141
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 91807,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 33.34255670899984,
+      "model_calls": 5,
+      "input_tokens": 25548,
+      "output_tokens": 3415,
+      "total_tokens": 28963,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2567,
+            "output_tokens": 70,
+            "total_tokens": 2637
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3200,
+            "output_tokens": 144,
+            "total_tokens": 3344
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4798,
+            "output_tokens": 558,
+            "total_tokens": 5356
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7134,
+            "output_tokens": 432,
+            "total_tokens": 7566
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7849,
+            "output_tokens": 2211,
+            "total_tokens": 10060
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 91807,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 34.836609625000165,
+      "model_calls": 4,
+      "input_tokens": 24878,
+      "output_tokens": 4144,
+      "total_tokens": 29022,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3301,
+            "output_tokens": 1677,
+            "total_tokens": 4978
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6035,
+            "output_tokens": 264,
+            "total_tokens": 6299
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6770,
+            "output_tokens": 928,
+            "total_tokens": 7698
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 8772,
+            "output_tokens": 1275,
+            "total_tokens": 10047
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "width-12",
+      "seed": 91807,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 28.689079458999913,
+      "model_calls": 6,
+      "input_tokens": 33914,
+      "output_tokens": 3398,
+      "total_tokens": 37312,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2878,
+            "output_tokens": 86,
+            "total_tokens": 2964
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3527,
+            "output_tokens": 144,
+            "total_tokens": 3671
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5125,
+            "output_tokens": 188,
+            "total_tokens": 5313
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6820,
+            "output_tokens": 361,
+            "total_tokens": 7181
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7464,
+            "output_tokens": 363,
+            "total_tokens": 7827
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 8100,
+            "output_tokens": 2256,
+            "total_tokens": 10356
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 39047,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 34.939025584000774,
+      "model_calls": 9,
+      "input_tokens": 47265,
+      "output_tokens": 3384,
+      "total_tokens": 50649,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 67,
+            "total_tokens": 2943
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3221,
+            "output_tokens": 270,
+            "total_tokens": 3491
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4260,
+            "output_tokens": 117,
+            "total_tokens": 4377
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5128,
+            "output_tokens": 196,
+            "total_tokens": 5324
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5449,
+            "output_tokens": 74,
+            "total_tokens": 5523
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5525,
+            "output_tokens": 289,
+            "total_tokens": 5814
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5973,
+            "output_tokens": 1357,
+            "total_tokens": 7330
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7363,
+            "output_tokens": 73,
+            "total_tokens": 7436
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7470,
+            "output_tokens": 941,
+            "total_tokens": 8411
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 39047,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 19.90475641699959,
+      "model_calls": 2,
+      "input_tokens": 8706,
+      "output_tokens": 2110,
+      "total_tokens": 10816,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": false,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1439,
+            "total_tokens": 4738
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5407,
+            "output_tokens": 671,
+            "total_tokens": 6078
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 39047,
+      "arm": "ordinary",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 28.432448583000223,
+      "model_calls": 6,
+      "input_tokens": 24620,
+      "output_tokens": 2664,
+      "total_tokens": 27284,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 61,
+            "total_tokens": 2626
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2904,
+            "output_tokens": 118,
+            "total_tokens": 3022
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3736,
+            "output_tokens": 231,
+            "total_tokens": 3967
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4840,
+            "output_tokens": 263,
+            "total_tokens": 5103
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5246,
+            "output_tokens": 81,
+            "total_tokens": 5327
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5329,
+            "output_tokens": 1910,
+            "total_tokens": 7239
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 58271,
+      "arm": "ordinary",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 26.20415958400008,
+      "model_calls": 5,
+      "input_tokens": 19506,
+      "output_tokens": 2146,
+      "total_tokens": 21652,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2565,
+            "output_tokens": 114,
+            "total_tokens": 2679
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2952,
+            "output_tokens": 91,
+            "total_tokens": 3043
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3789,
+            "output_tokens": 131,
+            "total_tokens": 3920
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4631,
+            "output_tokens": 661,
+            "total_tokens": 5292
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5569,
+            "output_tokens": 1149,
+            "total_tokens": 6718
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 58271,
+      "arm": "ptc",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 15.48225441700015,
+      "model_calls": 2,
+      "input_tokens": 8286,
+      "output_tokens": 1689,
+      "total_tokens": 9975,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3299,
+            "output_tokens": 1277,
+            "total_tokens": 4576
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4987,
+            "output_tokens": 412,
+            "total_tokens": 5399
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 58271,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 19.367610916999183,
+      "model_calls": 5,
+      "input_tokens": 20623,
+      "output_tokens": 2038,
+      "total_tokens": 22661,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 68,
+            "total_tokens": 2944
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3217,
+            "output_tokens": 95,
+            "total_tokens": 3312
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4058,
+            "output_tokens": 156,
+            "total_tokens": 4214
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4925,
+            "output_tokens": 345,
+            "total_tokens": 5270
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5547,
+            "output_tokens": 1374,
+            "total_tokens": 6921
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 76493,
+      "arm": "ptc",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 27.81829070799995,
+      "model_calls": 6,
+      "input_tokens": 30519,
+      "output_tokens": 2477,
+      "total_tokens": 32996,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3298,
+            "output_tokens": 135,
+            "total_tokens": 3433
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3689,
+            "output_tokens": 126,
+            "total_tokens": 3815
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4521,
+            "output_tokens": 166,
+            "total_tokens": 4687
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5386,
+            "output_tokens": 295,
+            "total_tokens": 5681
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6044,
+            "output_tokens": 558,
+            "total_tokens": 6602
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7581,
+            "output_tokens": 1197,
+            "total_tokens": 8778
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 76493,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 31.250262125000518,
+      "model_calls": 5,
+      "input_tokens": 19693,
+      "output_tokens": 2708,
+      "total_tokens": 22401,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2564,
+            "output_tokens": 73,
+            "total_tokens": 2637
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2908,
+            "output_tokens": 100,
+            "total_tokens": 3008
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3762,
+            "output_tokens": 347,
+            "total_tokens": 4109
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5016,
+            "output_tokens": 302,
+            "total_tokens": 5318
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5443,
+            "output_tokens": 1886,
+            "total_tokens": 7329
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 76493,
+      "arm": "compute",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 38.245679292000204,
+      "model_calls": 5,
+      "input_tokens": 21030,
+      "output_tokens": 3015,
+      "total_tokens": 24045,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2875,
+            "output_tokens": 83,
+            "total_tokens": 2958
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3229,
+            "output_tokens": 96,
+            "total_tokens": 3325
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4079,
+            "output_tokens": 261,
+            "total_tokens": 4340
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5210,
+            "output_tokens": 265,
+            "total_tokens": 5475
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5637,
+            "output_tokens": 2310,
+            "total_tokens": 7947
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 91807,
+      "arm": "compute",
+      "position": 1,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 24.300580125000124,
+      "model_calls": 6,
+      "input_tokens": 29208,
+      "output_tokens": 2565,
+      "total_tokens": 31773,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2878,
+            "output_tokens": 80,
+            "total_tokens": 2958
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3248,
+            "output_tokens": 95,
+            "total_tokens": 3343
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4099,
+            "output_tokens": 289,
+            "total_tokens": 4388
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5318,
+            "output_tokens": 363,
+            "total_tokens": 5681
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5958,
+            "output_tokens": 1244,
+            "total_tokens": 7202
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 7707,
+            "output_tokens": 494,
+            "total_tokens": 8201
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 91807,
+      "arm": "ordinary",
+      "position": 2,
+      "evidence_kind": "live",
+      "correct": false,
+      "valid": false,
+      "usage_complete": true,
+      "elapsed_seconds": 21.48020295799961,
+      "model_calls": 5,
+      "input_tokens": 19244,
+      "output_tokens": 2144,
+      "total_tokens": 21388,
+      "validation": {
+        "answer_correct": false,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 2567,
+            "output_tokens": 73,
+            "total_tokens": 2640
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 2930,
+            "output_tokens": 100,
+            "total_tokens": 3030
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 3786,
+            "output_tokens": 139,
+            "total_tokens": 3925
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 4679,
+            "output_tokens": 326,
+            "total_tokens": 5005
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 5282,
+            "output_tokens": 1506,
+            "total_tokens": 6788
+          },
+          "completed": true
+        }
+      ]
+    },
+    {
+      "case": "security-two-connectors",
+      "seed": 91807,
+      "arm": "ptc",
+      "position": 3,
+      "evidence_kind": "live",
+      "correct": true,
+      "valid": true,
+      "usage_complete": true,
+      "elapsed_seconds": 24.774010749999434,
+      "model_calls": 2,
+      "input_tokens": 9338,
+      "output_tokens": 2739,
+      "total_tokens": 12077,
+      "validation": {
+        "answer_correct": true,
+        "route_ok": true,
+        "interpreter_ok": true,
+        "sufficient_graph_evidence": true
+      },
+      "error_type": null,
+      "model_call_details": [
+        {
+          "usage": {
+            "input_tokens": 3301,
+            "output_tokens": 2105,
+            "total_tokens": 5406
+          },
+          "completed": true
+        },
+        {
+          "usage": {
+            "input_tokens": 6037,
+            "output_tokens": 634,
+            "total_tokens": 6671
+          },
+          "completed": true
+        }
+      ]
+    }
+  ]
+}

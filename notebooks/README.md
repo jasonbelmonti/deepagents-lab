@@ -111,3 +111,9 @@ recorded failures, pair counts, tokens and latency. They predate current harness
 fixes and are not current-code validation or held-out evidence. Scripted timings
 are not live benefits. Keep all notebook outputs local and commit only the
 synchronized source pair.
+
+The separate [fresh-case campaign findings](../docs/experiments/graph-ptc-value/fresh-20260913/findings.md)
+capture 60 later live invocations on the merged harness: four fresh seeds,
+five workloads and all three arms. The committed extract includes every failure
+and supports keyless arithmetic checks. It is not pooled with the earlier
+pilot displayed by the notebook; no notebook rerun is needed to read these results.
