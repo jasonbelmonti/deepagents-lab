@@ -39,7 +39,7 @@ Reports are saved under ignored `results/incident-triage/` directories. The
 fixture, measurement, runner and report helpers live under
 `src/deepagents_lab/benchmarks/` so the notebook stays focused on the experiment.
 
-## Graph workspace (offline-first)
+## Graph workspace (exploratory research, offline-first)
 
 ```bash
 uv run --frozen --group notebooks jupyter lab \
@@ -65,3 +65,49 @@ parameters and the observed revision, not historical graph copies. Restore them
 using the printed database path and investigation ID. This local experiment has
 no distributed result-handle cache, tenant authorization, or production database
 selection. The default Agent Server and UI are unchanged.
+
+## Graph PTC value (agent comparison)
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/graph-ptc-value.ipynb
+```
+
+1. Run all cells as committed. No key is needed: three scripted invocations
+   exercise real DeepAgents/QuickJS without provider calls.
+2. Read the separate historical pilot section. It loads committed metrics;
+   it does not run a model. The first, confounded campaign is excluded.
+3. Only when ready to spend, configure the LIVE cell, then change
+   `RUN_LIVE = False` to `True`. Defaults are 24 paid agent invocations,
+   not 24 API requests. Deadlines and work limits are not a dollar budget.
+
+**Primary: ordinary (no interpreter) vs PTC.** **Secondary: compute-only
+interpreter vs PTC.** Every arm shares graph data, batch APIs and limits.
+Depth/width cases and a lookup control expose both benefits and overhead.
+This is separate from graph workspace's exploratory loading/persistence work.
+
+LIVE loads `ENV_FILE = ROOT / ".env"` only after opt-in. Use:
+
+```dotenv
+OPENAI_API_KEY=your-key
+DEEPAGENTS_LAB_MODEL=openai:gpt-5.6-luna
+```
+
+Existing environment values win over `.env`. Set `ENV_FILE` to an absolute path
+if your file lives in another checkout. LangSmith is optional; existing tracing
+settings apply. No Agent Server or Agent Chat UI is required for this notebook.
+
+For a smaller first run, change the configuration cell to
+`config = replace(Config(), cases=(CASES[0],), seeds=(1103,))` before enabling
+LIVE. That schedules three paid agent invocations, one per arm. Keep the default
+offline checks unchanged. New campaigns go to unique ignored directories under
+`results/graph-ptc-value/live/`; rerunning LIVE incurs additional calls.
+After interrupting a campaign, restart the kernel: a narrow upstream cleanup
+race can leave a daemon worker, although observed evidence is saved.
+
+[Historical findings](../docs/experiments/graph-ptc-value/pilot-findings.md) and
+[all-attempt tables](../docs/experiments/graph-ptc-value/pilot-tables.md) preserve
+recorded failures, pair counts, tokens and latency. They predate current harness
+fixes and are not current-code validation or held-out evidence. Scripted timings
+are not live benefits. Keep all notebook outputs local and commit only the
+synchronized source pair.

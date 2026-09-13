@@ -199,7 +199,27 @@ section makes three paid invocations and records real token usage; only that
 section loads `.env`. All databases and measurements stay under ignored
 `results/graph-workspace/` directories. No new dependency or service is required.
 
-The `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
+For the **no-interpreter vs PTC agent comparison**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/graph-ptc-value.ipynb
+```
+
+This tests whether adding an interpreter with PTC helps warm-introduction
+investigations. Ordinary (no interpreter) vs PTC is primary; compute-only vs PTC
+is a secondary control. Graph workspace above remains exploratory research.
+Default Run All requires no keys: it runs three scripted checks and displays
+separate historical pilot findings. It makes no new model measurements.
+Only changing `RUN_LIVE = False` to `True` enables paid runs (24 agent invocations
+by default, potentially many more API requests). That section loads the ignored
+`.env`; see [the notebook guide](notebooks/README.md#graph-ptc-value-agent-comparison)
+for configuration and a smaller first run.
+
+[Historical findings and auditable metrics](docs/experiments/graph-ptc-value/pilot-findings.md)
+show mixed latency results and conditional token savings, not a general speedup.
+
+Each `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
 Keep both files synchronized and output-free before committing:
 
 ```bash

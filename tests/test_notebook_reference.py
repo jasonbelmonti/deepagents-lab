@@ -11,6 +11,7 @@ NOTEBOOKS = [
     "reference/ptc-code-interpreter",
     "reference/incident-triage-benchmark",
     "experiments/graph-workspace",
+    "experiments/graph-ptc-value",
 ]
 
 
