@@ -12,6 +12,7 @@ NOTEBOOKS = [
     "reference/incident-triage-benchmark",
     "experiments/graph-workspace",
     "experiments/graph-ptc-value",
+    "experiments/duckdb-code-interpreter",
 ]
 
 

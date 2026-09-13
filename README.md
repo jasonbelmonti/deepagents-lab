@@ -224,6 +224,20 @@ capture four new seeds and a reserved question variant on the merged harness.
 PTC saved tokens on multi-step cases and passed more harder cases; latency
 benefits remain limited. All failures and missing matched comparisons are retained.
 
+For **DuckDB through the code interpreter**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-code-interpreter.ipynb
+```
+
+Run All executes two offline DeepAgents/QuickJS probes against a synthetic DuckDB
+sales database. JavaScript calls an allowlisted Python SQL tool at runtime,
+performs a parameterized join/aggregation, and observes a subsequent host-side
+data update. Set `RUN_LIVE=True` to let the configured model write its own SQL
+and JavaScript. See [the notebook guide](notebooks/README.md#duckdb-code-interpreter)
+for setup and experiment boundaries.
+
 Each `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
 Keep both files synchronized and output-free before committing:
 
