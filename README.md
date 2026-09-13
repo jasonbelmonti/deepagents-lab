@@ -219,6 +219,11 @@ for configuration and a smaller first run.
 [Historical findings and auditable metrics](docs/experiments/graph-ptc-value/pilot-findings.md)
 show mixed latency results and conditional token savings, not a general speedup.
 
+[Fresh-case results from 60 live invocations](docs/experiments/graph-ptc-value/fresh-20260913/findings.md)
+capture four new seeds and a reserved question variant on the merged harness.
+PTC saved tokens on multi-step cases and passed more harder cases; latency
+benefits remain limited. All failures and missing matched comparisons are retained.
+
 For **DuckDB through the code interpreter**, open:
 
 ```bash
