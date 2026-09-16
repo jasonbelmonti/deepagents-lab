@@ -219,6 +219,38 @@ for configuration and a smaller first run.
 [Historical findings and auditable metrics](docs/experiments/graph-ptc-value/pilot-findings.md)
 show mixed latency results and conditional token savings, not a general speedup.
 
+[Fresh-case results from 60 live invocations](docs/experiments/graph-ptc-value/fresh-20260913/findings.md)
+capture four new seeds and a reserved question variant on the merged harness.
+PTC saved tokens on multi-step cases and passed more harder cases; latency
+benefits remain limited. All failures and missing matched comparisons are retained.
+
+For **DuckDB through the code interpreter**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-code-interpreter.ipynb
+```
+
+Run All executes two offline DeepAgents/QuickJS probes against a synthetic DuckDB
+sales database. JavaScript calls an allowlisted Python SQL tool at runtime,
+performs a parameterized join/aggregation, and observes a subsequent host-side
+data update. Set `RUN_LIVE=True` to let the configured model write its own SQL
+and JavaScript. See [the notebook guide](notebooks/README.md#duckdb-code-interpreter)
+for setup and experiment boundaries.
+
+For **evidence-backed warm introductions into a job**, open:
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/duckdb-warm-introductions.ipynb
+```
+
+This fork compares ordinary SQL tools with interpreter-assisted SQL on the same
+synthetic social network. It includes direct contacts, distinct first connectors,
+relationship evidence and current team membership. Run All verifies real tool
+outputs offline; opt-in LIVE pairs record tokens, invocation latency and fixture
+correctness. See [the notebook guide](notebooks/README.md#duckdb-warm-introductions).
+
 Each `.ipynb` is paired with a review-friendly Jupytext `py:percent` source file.
 Keep both files synchronized and output-free before committing:
 

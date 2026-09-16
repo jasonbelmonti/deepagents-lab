@@ -14,6 +14,8 @@ NOTEBOOKS = [
     "experiments/graph-ptc-value",
     "experiments/steering-embeddings",
     "experiments/state-steering",
+    "experiments/duckdb-code-interpreter",
+    "experiments/duckdb-warm-introductions",
 ]
 
 
