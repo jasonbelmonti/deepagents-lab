@@ -1,11 +1,20 @@
 """Source conversations, model-authored pairs, and persisted vector records."""
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model_config = ConfigDict(extra="forbid")
+
+    @field_validator("*")
+    @classmethod
+    def reject_blank_text(cls, value):
+        # Whitespace can encode Markdown/Python structure. Validate blank values
+        # without rewriting source messages, corrections or proposed responses.
+        if isinstance(value, str) and not value.strip():
+            raise ValueError("Text must contain a non-whitespace character.")
+        return value
 
 
 class Message(StrictModel):

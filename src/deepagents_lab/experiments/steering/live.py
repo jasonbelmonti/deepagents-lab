@@ -80,7 +80,13 @@ def compare_revisions(event, index, query_x, model, output_dir: Path):
         try:
             with tracing_context(enabled=False):
                 response = model.invoke(revision_messages(event, correction))
-            row.update(ok=True, text=response.text, usage=response.usage_metadata)
+            row.update(usage=response.usage_metadata,
+                       finish_reason=response.response_metadata.get("finish_reason"),
+                       refusal=response.additional_kwargs.get("refusal"))
+            if (response.tool_calls or not response.text.strip() or row["refusal"]
+                    or row["finish_reason"] in ("length", "content_filter")):
+                raise ValueError("Expected a complete, nonempty text-only revision.")
+            row.update(ok=True, text=response.text)
         except Exception as error:
             row["error_type"] = type(error).__name__
         row["elapsed_ms"] = (perf_counter() - started) * 1000

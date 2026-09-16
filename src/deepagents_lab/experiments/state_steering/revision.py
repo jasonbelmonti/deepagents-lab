@@ -35,9 +35,12 @@ def revise_once(state, decision, model):
     try:
         with tracing_context(enabled=False):
             response = model.invoke(revision_messages(state, decision["advice"]))
-        row["usage"] = response.usage_metadata
-        if response.tool_calls or not response.text.strip():
-            raise ValueError("Expected a nonempty text-only revision.")
+        row.update(usage=response.usage_metadata,
+                   finish_reason=response.response_metadata.get("finish_reason"),
+                   refusal=response.additional_kwargs.get("refusal"))
+        if (response.tool_calls or not response.text.strip() or row["refusal"]
+                or row["finish_reason"] in ("length", "content_filter")):
+            raise ValueError("Expected a complete, nonempty text-only revision.")
         row.update(text=response.text, revised=True)
     except Exception as error:
         row.update(ok=False, error_type=type(error).__name__)
