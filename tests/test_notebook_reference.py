@@ -12,6 +12,8 @@ NOTEBOOKS = [
     "reference/incident-triage-benchmark",
     "experiments/graph-workspace",
     "experiments/graph-ptc-value",
+    "experiments/steering-embeddings",
+    "experiments/state-steering",
 ]
 
 

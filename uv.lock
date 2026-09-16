@@ -582,6 +582,7 @@ notebooks = [
     { name = "jupyterlab" },
     { name = "jupytext" },
     { name = "langchain-quickjs" },
+    { name = "numpy" },
     { name = "python-dotenv" },
 ]
 
@@ -602,6 +603,7 @@ notebooks = [
     { name = "jupyterlab", specifier = "==4.6.3" },
     { name = "jupytext", specifier = "==1.19.5" },
     { name = "langchain-quickjs", specifier = "==0.3.5" },
+    { name = "numpy", specifier = ">=2.3,<3" },
     { name = "python-dotenv", specifier = "==1.2.3" },
 ]
 

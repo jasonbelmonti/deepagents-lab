@@ -1,5 +1,90 @@
 # Notebook workspace
 
+## State-to-correction self-steering (S → Y)
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/state-steering.ipynb
+```
+
+Start here for the runtime experiment. S contains the observable history and
+proposed final response. The captured problem X remains a retrospective
+annotation; a small ridge model predicts the correction embedding Y directly
+from S. A separate binary scorer learns when to intervene using reviewed positive
+and negative examples. Training and runtime share one versioned state serializer.
+Labels, later steering, and problem annotations never enter the state embedding.
+
+Run All is offline with 66 authored synthetic checkpoints: 30 needing steering,
+30 compliant controls, and 6 later scope changes that warrant no intervention
+at the original checkpoint. Grouped holdouts compare predicted Y, state-neighbor
+retrieval, direct correction similarity, and no intervention. The correction
+library uses positive training examples only; validation selects regularization
+and the intervention threshold. Reported false-positive rates and correction
+family matches are wiring measurements, not evidence of successful task repair.
+
+The notebook exports a reloadable JSON policy and demonstrates
+`check_state(state, policy, embedder)` as the host integration point. It records
+state serialization, embedding, gate, prediction and retrieval times separately.
+A negative gate skips prediction/retrieval and any revision call. A positive gate
+returns ranked historical advice for a bounded continuation. The experiment is
+independent of the default agent. Its optional reviser produces text and has no
+tools for executing missing work.
+
+Use `EXAMPLES_JSONL` to import reviewed state/annotation records. Convert an
+existing capture with `from_capture(record, needs_intervention=..., assessment=...)`;
+review whether the correction was warranted given the old state. User silence
+does not automatically label a checkpoint as correct. Both classes must occur
+in each split, and duplicate states are rejected. Complete states over the
+7,000 UTF-8 byte pilot limit fail explicitly instead of losing requirements.
+
+LIVE embeddings are opt-in: up to 66 preparation requests for the default corpus,
+then one uncached runtime embedding request and one cache-hit check. A separate
+revision opt-in makes at most three chat requests across generic review and the
+two gated advice arms. Actual token usage, cache behavior and timings are saved.
+Credentials load from the ignored main-checkout `.env` only after opt-in; there
+are no automatic provider retries. Results, manifests and policies remain under
+ignored `results/state-steering/`. Helpers are in
+`src/deepagents_lab/experiments/state_steering/`.
+
+## Steering embeddings (capture-time problem descriptions)
+
+```bash
+uv run --frozen --group notebooks jupyter lab \
+  notebooks/experiments/steering-embeddings.ipynb
+```
+
+At acceptance time, a model interprets the conversation and calls
+`accept_steering(problem, correction)`. The backend embeds and preserves both
+descriptions with their source conversation. The captured problem is X; the
+requested correction is Y. This experiment compares direct correction search,
+retrieval through similar problems, and a small ridge X→Y predictor.
+
+Run All uses 36 authored synthetic events and deterministic lexical vectors,
+with no credentials or provider calls. It demonstrates the pipeline; its scores
+are not semantic-model or real-world efficacy evidence. Task/context groups stay
+together across splits, only validation data selects regularization, and the
+correction index contains training examples only. Metrics measure coarse
+correction-family retrieval given a captured problem, not autonomous detection
+or successful task repair.
+
+The LIVE section is opt-in and configurable: it generates actual capture tool
+arguments with the lab's OpenAI model and embeds them with
+`text-embedding-3-small`. The default corpus schedules 36 capture requests and
+up to 36 embedding requests, without automatic retries. A separate opt-in adds
+four text-only revision calls for inspection. These calls cannot execute missing
+work. Failed captures remain visible and prevent aggregate live scoring.
+
+Import real conversations using the notebook's JSONL example and
+`LIVE_EVENTS_JSONL`. Assign conversation/task `group_id` values and human
+`family` relevance labels; neither is shown to the capture model. Keep transcripts
+and generated records in ignored `results/steering-embeddings/`. LIVE loads the
+ignored `.env` only after opt-in and disables tracing. When launched inside a
+repository-local worktree, its default `ENV_FILE` points to the main checkout.
+All captured text/vectors, split IDs, predictions, source hashes and observed
+usage are saved locally. Helpers live in `src/deepagents_lab/experiments/steering/`.
+
+## Conventions
+
 Use `notebooks/reference/` for small, executable examples of reusable
 DeepAgents techniques. Each tracked notebook has a paired Jupytext
 `py:percent` source file so code review does not depend on notebook JSON.
